@@ -12,3 +12,5 @@ Summary:
 !path classes/
 !path test-classes/
 !path lib/*.jar
+
+!steps org.fitnesse.testsystems.jbehave.ExampleSteps

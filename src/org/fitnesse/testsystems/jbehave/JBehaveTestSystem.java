@@ -6,15 +6,16 @@ import fitnesse.wikitext.Utils;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.io.LoadFromRelativeFile;
+import org.jbehave.core.io.StoryLoader;
 import org.jbehave.core.model.*;
 import org.jbehave.core.reporters.*;
+import org.jbehave.core.steps.CandidateSteps;
 import org.jbehave.core.steps.Steps;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.net.MalformedURLException;
+import java.util.*;
 
 import static fitnesse.wikitext.Utils.escapeHTML;
 import static java.lang.String.format;
@@ -23,19 +24,13 @@ public class JBehaveTestSystem implements TestSystem {
 
     private final String name;
     private final CompositeTestSystemListener testSystemListener;
-    private final Embedder embedder;
     private boolean started = false;
     private TestSummary testSummary;
-
-    public JBehaveTestSystem() {
-        this("");
-    }
 
     public JBehaveTestSystem(String name) {
         super();
         this.name = name;
         this.testSystemListener = new CompositeTestSystemListener();
-        this.embedder = new Embedder();
     }
 
     @Override
@@ -48,8 +43,19 @@ public class JBehaveTestSystem implements TestSystem {
 
         started = true;
 
+        testSystemListener.testSystemStarted(this);
+    }
+
+    private Embedder newEmbedder() throws MalformedURLException {
+        Embedder embedder = new Embedder();
         embedder.configuration()
                 .useStoryLoader(new LoadFromRelativeFile(new File("FitNesseRoot").toURL()))
+                .useStoryLoader(new StoryLoader() {
+                    @Override
+                    public String loadStoryAsText(String storyPath) {
+                        return storyPath;
+                    }
+                })
                 .useStoryReporterBuilder(new StoryReporterBuilder().withFormats(new Format("FITNESSE") {
                     @Override
                     public StoryReporter createStoryReporter(FilePrintStreamFactory factory, StoryReporterBuilder storyReporterBuilder) {
@@ -61,14 +67,9 @@ public class JBehaveTestSystem implements TestSystem {
 
         embedder.embedderControls().doGenerateViewAfterStories(false);
 
-        testSystemListener.testSystemStarted(this);
-
-        configureStep(new ExampleSteps());
+        return embedder;
     }
 
-    public void configureStep(Steps candidateSteps) {
-        embedder.candidateSteps().add(candidateSteps);
-    }
     @Override
     public void bye() throws IOException, InterruptedException {
         kill();
@@ -84,11 +85,28 @@ public class JBehaveTestSystem implements TestSystem {
         testSummary = new TestSummary();
 
         testSystemListener.testStarted(pageToTest);
+        Embedder embedder = newEmbedder();
 
-        embedder.runStoriesAsPaths(Arrays.asList(((WikiTestPage) pageToTest).getPath().replace(".", "/") + "/content.txt"));
+        Collection<String> stepNames = new StepsBuilder().getSteps(((WikiTestPage) pageToTest).getSourcePage());
+        Collection<CandidateSteps> steps = resolveClassInstances(stepNames);
 
-        //testSystemListener.processStep("<pre>" + pageToTest.getDecoratedData().getContent() + "</pre>");
+        embedder.candidateSteps().addAll(steps);
+
+        embedder.runStoriesAsPaths(Arrays.asList(pageToTest.getDecoratedData().getContent()));
+
         testSystemListener.testComplete(pageToTest, testSummary);
+    }
+
+    private Collection<CandidateSteps> resolveClassInstances(Collection<String> stepNames) {
+        List<CandidateSteps> candidateSteps = new LinkedList();
+        for (String stepName : stepNames) {
+            try {
+                candidateSteps.add((CandidateSteps) Class.forName(stepName).newInstance());
+            } catch (Exception e) {
+                processStep(format("Unable to load steps from %s: %s", stepName, e.toString()), ExecutionResult.ERROR);
+            }
+        }
+        return candidateSteps;
     }
 
     @Override
