@@ -142,7 +142,14 @@ public class JBehaveTestSystem implements TestSystem {
 
         @Override
         public void narrative(Narrative narrative) {
-//            println("narrative " + narrative);
+            if (!"".equals(narrative.inOrderTo()))
+                println("<em>In order to</em> " + escapeHTML(narrative.inOrderTo()));
+            if (!"".equals(narrative.asA()))
+                println("<em>As a</em> " + escapeHTML(narrative.asA()));
+            if (!"".equals(narrative.iWantTo()))
+                println("<em>I want to</em> " + escapeHTML(narrative.iWantTo()));
+            if (!"".equals(narrative.soThat()))
+                println("<em>So that</em> " + escapeHTML(narrative.soThat()));
         }
 
         @Override
