@@ -12,6 +12,8 @@ FitNesseRoot/files/testResults
 FitNesseRoot/files/testProgress
 antlib/
 classes/
+test-classes/
+test-results/
 lib/
 target/
 fitnesse-jbehave-test-system.iml
