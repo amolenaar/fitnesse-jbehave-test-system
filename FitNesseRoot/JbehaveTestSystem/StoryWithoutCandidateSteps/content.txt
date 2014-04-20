@@ -1,0 +1,4 @@
+
+Given a situation
+When step implementations are missing
+Then I'd like to be notified

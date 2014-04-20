@@ -4,13 +4,18 @@ Summary:
 
  * Pages adhere to the JBehave story syntax
  * Configure the JBehave test system with FitNesse
-
-!define TEST_SYSTEM {jbehave}
+ * ''!steps'' symbol type can be used to define the steps locations.
 
 !contents
+
+!define TEST_SYSTEM {jbehave}
 
 !path classes/
 !path test-classes/
 !path lib/*.jar
 
 !steps org.fitnesse.testsystems.jbehave.ExampleSteps
+
+!**> Please not that ''test-classes/'' is not in our own class path:
+${java.class.path}
+*!

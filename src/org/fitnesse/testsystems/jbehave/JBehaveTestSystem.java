@@ -24,12 +24,14 @@ public class JBehaveTestSystem implements TestSystem {
 
     private final String name;
     private final CompositeTestSystemListener testSystemListener;
+    private final ClassLoader classLoader;
     private boolean started = false;
     private TestSummary testSummary;
 
-    public JBehaveTestSystem(String name) {
+    public JBehaveTestSystem(String name, ClassLoader classLoader) {
         super();
         this.name = name;
+        this.classLoader = classLoader;
         this.testSystemListener = new CompositeTestSystemListener();
     }
 
@@ -46,13 +48,13 @@ public class JBehaveTestSystem implements TestSystem {
         testSystemListener.testSystemStarted(this);
     }
 
-    private Embedder newEmbedder() throws MalformedURLException {
+    private Embedder newEmbedder() {
         Embedder embedder = new Embedder();
         embedder.configuration()
-                .useStoryLoader(new LoadFromRelativeFile(new File("FitNesseRoot").toURL()))
                 .useStoryLoader(new StoryLoader() {
                     @Override
                     public String loadStoryAsText(String storyPath) {
+                        // We pass in the story text, so just pass it through
                         return storyPath;
                     }
                 })
@@ -101,7 +103,7 @@ public class JBehaveTestSystem implements TestSystem {
         List<CandidateSteps> candidateSteps = new LinkedList();
         for (String stepName : stepNames) {
             try {
-                candidateSteps.add((CandidateSteps) Class.forName(stepName).newInstance());
+                candidateSteps.add((CandidateSteps) classLoader.loadClass(stepName).newInstance());
             } catch (Exception e) {
                 processStep(format("Unable to load steps from %s: %s", stepName, e.toString()), ExecutionResult.ERROR);
             }
@@ -241,7 +243,7 @@ public class JBehaveTestSystem implements TestSystem {
 
         @Override
         public void pending(String step) {
-            println("pending '" + step + "'");
+            processStep(step, ExecutionResult.FAIL);
         }
 
         @Override
@@ -266,7 +268,10 @@ public class JBehaveTestSystem implements TestSystem {
 
         @Override
         public void pendingMethods(List<String> methods) {
-            println(format("Pending methods: %s", methods));
+            println("<h4>Pending methods</h4>");
+            for (String method : methods) {
+                println(format("<pre>%s</pre>", method));
+            }
         }
     }
 

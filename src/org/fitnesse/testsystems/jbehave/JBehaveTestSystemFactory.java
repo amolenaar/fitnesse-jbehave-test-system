@@ -4,15 +4,13 @@ import fitnesse.testsystems.Descriptor;
 import fitnesse.testsystems.TestSystem;
 import fitnesse.testsystems.TestSystemFactory;
 import fitnesse.wiki.PageData;
-import org.jbehave.core.steps.CandidateSteps;
-import org.jbehave.core.steps.InstanceStepsFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 public class JBehaveTestSystemFactory implements TestSystemFactory {
 
@@ -20,8 +18,17 @@ public class JBehaveTestSystemFactory implements TestSystemFactory {
     public TestSystem create(Descriptor descriptor) throws IOException {
         // TODO: get classpath
         // TODO: create class loader
+        String[] paths = descriptor.getClassPath().split(System.getProperty("path.separator"));
+        URL[] urls = new URL[paths.length];
+        for (int i = 0; i < paths.length; i++) {
+            String path = paths[i];
+            urls[i] = new File(path).toURI().toURL();
+            System.out.println("URL: " + urls[i]);
+        }
+        URLClassLoader classLoader = new URLClassLoader(urls, getClass().getClassLoader());
+
         try {
-            return new JBehaveTestSystem(descriptor.getTestSystem());
+            return new JBehaveTestSystem(descriptor.getTestSystem(), classLoader);
         } catch (Exception e) {
             throw new RuntimeException("Unable to create JBehaveTestSystem", e);
         }
