@@ -1,5 +1,6 @@
-JBehave test system for FitNesse a.k.a. Felicity (Oh Behave!)
-=============================================================
+JBehave test system for FitNesse
+================================
+(a.k.a. Felicity -- Oh Behave!)
 
 This project is a nice demonstration of the state of FitNesse and it's modularity. With fairly little code
 it's possible to define and run your JBehave tests from FitNesse.
