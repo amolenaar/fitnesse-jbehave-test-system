@@ -1,0 +1,32 @@
+<ivy-module version="2.0">
+	<info organisation="org.fitnesse.testsystems" module="fitnesse-jbehave">
+		<license name="Common Public License version 1.0"
+			url="http://www.opensource.org/licenses/cpl1.0" />
+		<description homepage="http://github.com/amolenaar/fitnesse-jbehave-test-system">
+			A test execiter for JBehave test scripts.
+		</description>
+	</info>
+	<configurations>
+		<conf name="default" visibility="public" />
+		<conf name="standalone" visibility="public" description="include in fitnesse-jbehave-standalone build" />
+		<conf name="test" visibility="public" extends="default" />
+	</configurations>
+        <!-- for publication to maven repos -->
+	<publications xmlns:e="urn:ant.apache.org:ivy-extras">
+		<artifact name="fitnesse-jbehave" type="jar" ext="jar" />
+		<artifact name="fitnesse-jbehave" type="pom" ext="pom" />
+		<artifact name="fitnesse-jbehave" type="source" ext="jar" e:classifier="sources" />
+		<artifact name="fitnesse-jbehave" type="javadoc" ext="jar" e:classifier="javadoc" />
+		<artifact name="fitnesse-jbehave" type="jar" ext="jar" e:classifier="standalone" />
+	</publications>
+ 
+	<dependencies>
+		<dependency org="org.fitnesse" name="fitnesse" rev="20140201" conf="standalone->default,default" />
+		<dependency org="org.jbehave" name="jbehave-core" rev="4.0-beta-5" conf="standalone->default,default" />
+
+		<!-- scope: test -->
+		<dependency org="org.mockito" name="mockito-core" rev="1.9.5" conf="test->default" />
+		<dependency org="junit" name="junit-dep" rev="4.11" conf="test->default" />
+		<dependency org="org.hamcrest" name="hamcrest-all" rev="1.3" conf="test->default" />
+	</dependencies>
+</ivy-module>

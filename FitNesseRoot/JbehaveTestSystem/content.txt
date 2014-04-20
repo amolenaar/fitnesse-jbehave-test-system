@@ -1,0 +1,8 @@
+This page tells you how to use the JBehave Test System for FitNesse.
+
+Summary:
+
+ * Pages adhere to the JBehave story syntax
+ * Configure the JBehave test system with FitNesse
+
+!define TEST_SYSTEM {jbehave}

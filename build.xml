@@ -1,0 +1,176 @@
+<project name="FitNesse-JBehave Test system" default="all" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <description>
+        Execute JBehave tests from FitNesse.
+    </description>
+
+    <property environment="env"/>
+    <property name="src.dir" location="src"/>
+    <property name="test.src.dir" location="test"/>
+    <property name="classes.dir" location="classes"/>
+    <property name="test.classes.dir" location="test-classes"/>
+    <property name="fitnesseRoot" value="FitNesseRoot"/>
+    <property name="results.dir" location="test-results"/>
+    <property name="dist.dir" location="dist"/>
+    <property name="javadoc.dir" location="javadoc"/>
+    <property name="lib.dir" location="lib"/>
+    <property name="antlib.dir" location="antlib"/>
+    <property name="port" value="8002"/>
+  
+    <target name="all" depends="test" description=""/>
+  
+    <target name="build" depends="clean, compile" description="clean, then compile the source"/>
+
+    <target name="run" depends="compile" description="Start FitNesse from the command line">
+        <java classpathref="classpath" classname="fitnesseMain.FitNesseMain" fork="true" failonerror="true">
+            <arg value="-v" />
+            <arg value="-p" />
+            <arg value="${port}" />
+        </java>
+    </target>
+
+    <!--
+      Bundling
+      -->
+    <target name="jar" depends="compile" description="generate the jar file">
+        <mkdir dir="${dist.dir}" />
+        <delete file="${dist.dir}/fitnesse-jbehave.jar" />
+
+        <jar jarfile="${dist.dir}/fitnesse-jbehave.jar" basedir="${classes.dir}">
+            <include name="**" />
+        </jar>
+    </target>
+
+    <target name="standalone-jar" depends="jar" description="generate the standalone jar file">
+        <ivy:cachefileset setid="standalone.jar.fileset" conf="standalone" />
+        <jar jarfile="${dist.dir}/fitnesse-jbehave-standalone.jar">
+            <zipfileset src="${dist.dir}/fitnesse-jbehave.jar" />
+            <zipgroupfileset refid="standalone.jar.fileset" />
+        </jar>
+    </target>
+
+    <target name="sources-jar">
+        <jar jarfile="${dist.dir}/fitnesse--jbehave-sources.jar" basedir="src">
+            <include name="**" />
+        </jar>
+    </target>
+
+    <target name="javadoc-jar" depends="compile">
+        <mkdir dir="${javadoc.dir}" />
+        <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" classpathref="classpath" />
+        <jar jarfile="${dist.dir}/fitnesse--jbehave-javadoc.jar" basedir="${javadoc.dir}" />
+
+    </target>
+
+    <target name="compile" depends="resolve" description="compile the source (make)">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" debug="true" source="1.7" target="1.7" includeantruntime="false" />
+    </target>
+
+    <target name="test-compile" depends="compile" description="compile the source (make)">
+        <mkdir dir="${test.classes.dir}" />
+        <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" classpathref="classpath" debug="true" source="1.7" target="1.7" includeantruntime="false" />
+    </target>
+
+    <target name="clean" description="delete everything in the classes directory">
+        <delete dir="${classes.dir}" />
+        <delete dir="${test.classes.dir}" />
+        <delete dir="${results.dir}" />
+        <delete dir="${dist.dir}" />
+        <delete dir="${javadoc.dir}" />
+    </target>
+
+    <target name="test" depends="test-compile" description="run the unit tests">
+        <mkdir dir="${results.dir}" />
+        <junit forkmode="once" fork="yes" printsummary="no" haltonfailure="yes" haltonerror="yes" dir="${basedir}">
+            <classpath refid="classpath" />
+            <formatter type="xml" usefile="true" />
+            <formatter type="plain" usefile="false" />
+            <batchtest todir="${results.dir}">
+                <fileset dir="${test.src.dir}">
+                    <include name="**/*Test.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="release" depends="clean, test, pom" />
+
+    <target name="resolve" depends="ivy-init">
+        <ivy:resolve />
+        <ivy:cachepath pathid="lib.classpath" />
+        <path id="classpath">
+            <pathelement path="${classes.dir}" />
+            <pathelement path="${test.classes.dir}" />
+            <path refid="lib.classpath" />
+        </path>
+    </target>
+
+    <target name="pom" depends="resolve">
+        <ivy:deliver deliverpattern="${dist.dir}/ivy.xml" pubrevision="${version}" status="release" />
+        <ivy:makepom ivyfile="${dist.dir}/ivy.xml" templatefile="extra/maven/pom.xml.template" pomfile="${dist.dir}/fitnesse.pom" conf="standalone,default,test">
+               <mapping conf="standalone" scope="compile" />
+               <mapping conf="test" scope="test" />
+        </ivy:makepom>
+    </target>
+
+    <target name="snapshot" depends="resolve,pom">
+        <ivy:publish resolver="sonatype-nexus-snapshots"
+            pubrevision="${version}"
+            publishivy="false">
+            <artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]" />
+        </ivy:publish>
+    </target>
+
+    <target name="publish" depends="jar,pom,standalone-jar,sources-jar,javadoc-jar">
+        <fail unless="upload.user" message="supply upload.user on the command line"/>
+        <fail unless="upload.password" message="supply upload.password on the command line"/>
+        <fail unless="pgp.password" message="supply pgp.password on the command line"/>
+        <ivy:settings id="ivy.publish.instance"
+            file="ivysettings-sonatype.xml" />
+        <ivy:publish resolver="sonatype-nexus-staging"
+            pubrevision="${version}"
+            publishivy="false"
+            settingsref="ivy.publish.instance"
+            overwrite="true">
+            <artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]" />
+        </ivy:publish>
+    </target>
+
+    <!--
+        Dependency management boilerplate
+      -->
+    <property name="maven.central.url" value="http://repo2.maven.org/maven2" />
+
+    <available file="${antlib.dir}/ivy.jar" type="file" property="have.ivy.jar"/>
+    <available file="${antlib.dir}/bcprov.jar" type="file" property="have.bcprov.jar"/>
+    <available file="${antlib.dir}/bcpg.jar" type="file" property="have.bcpg.jar"/>
+
+    <condition property="ivy.download.not.required">
+        <and>
+            <istrue value="${have.ivy.jar}" />
+            <istrue value="${have.bcprov.jar}" />
+            <istrue value="${have.bcpg.jar}" />
+        </and>
+    </condition>
+
+    <target name="ivy-init" depends="ivy-download">
+        <path id="ivy.class.path">
+            <fileset dir="${antlib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+            uri="antlib:org.apache.ivy.ant"
+            classpathref="ivy.class.path" />
+    </target>
+
+    <target name="ivy-download" unless="ivy.download.not.required">
+        <mkdir dir="${antlib.dir}" />
+        <get src="${maven.central.url}/org/apache/ivy/ivy/2.3.0/ivy-2.3.0.jar" dest="${antlib.dir}/ivy.jar" usetimestamp="true" verbose="true" />
+        <!-- The following libs are used for signing artifacts
+             when deployed to Maven Central.  -->
+        <get src="${maven.central.url}/org/bouncycastle/bcprov-jdk16/1.46/bcprov-jdk16-1.46.jar" dest="${antlib.dir}/bcprov.jar" usetimestamp="true" verbose="true" />
+        <get src="${maven.central.url}/org/bouncycastle/bcpg-jdk16/1.46/bcpg-jdk16-1.46.jar" dest="${antlib.dir}/bcpg.jar" usetimestamp="true" verbose="true" />
+    </target>
+</project>
