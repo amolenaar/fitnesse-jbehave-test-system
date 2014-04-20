@@ -21,12 +21,17 @@
   
     <target name="build" depends="clean, compile" description="clean, then compile the source"/>
 
-    <target name="run" depends="compile" description="Start FitNesse from the command line">
+    <target name="run" depends="compile, retrieve" description="Start FitNesse from the command line">
         <java classpathref="classpath" classname="fitnesseMain.FitNesseMain" fork="true" failonerror="true">
             <arg value="-v" />
             <arg value="-p" />
             <arg value="${port}" />
         </java>
+    </target>
+
+
+    <target name="retrieve" depends="resolve" description="Copy dependencies to lib/, mainly for Acceptance tests and IDE's">
+        <ivy:retrieve pattern="${lib.dir}/[artifact].[ext]" conf="standalone,default,test" />
     </target>
 
     <!--

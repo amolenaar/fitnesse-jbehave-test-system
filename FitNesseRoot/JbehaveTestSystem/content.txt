@@ -6,3 +6,9 @@ Summary:
  * Configure the JBehave test system with FitNesse
 
 !define TEST_SYSTEM {jbehave}
+
+!contents
+
+!path classes/
+!path test-classes/
+!path lib/*.jar
