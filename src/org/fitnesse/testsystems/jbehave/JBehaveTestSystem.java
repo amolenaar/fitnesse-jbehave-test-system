@@ -21,21 +21,22 @@ import static java.lang.String.format;
 
 public class JBehaveTestSystem implements TestSystem {
 
+    private final String name;
     private final CompositeTestSystemListener testSystemListener;
-    private String name;
+    private final Embedder embedder;
     private boolean started = false;
-    private Embedder embedder;
     private TestSummary testSummary;
 
     public JBehaveTestSystem() {
-        this.testSystemListener = new CompositeTestSystemListener();
+        this("");
     }
 
     public JBehaveTestSystem(String name) {
-        this();
+        super();
         this.name = name;
+        this.testSystemListener = new CompositeTestSystemListener();
+        this.embedder = new Embedder();
     }
-
 
     @Override
     public String getName() {
@@ -47,7 +48,6 @@ public class JBehaveTestSystem implements TestSystem {
 
         started = true;
 
-        embedder = new Embedder();
         embedder.configuration()
                 .useStoryLoader(new LoadFromRelativeFile(new File("FitNesseRoot").toURL()))
                 .useStoryReporterBuilder(new StoryReporterBuilder().withFormats(new Format("FITNESSE") {
