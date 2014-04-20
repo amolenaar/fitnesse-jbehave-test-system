@@ -8,4 +8,5 @@ Examples:
 | value | outcome |
 | 2 | 4 |
 | 3 | 9 |
+| 4 | 10 |
 
