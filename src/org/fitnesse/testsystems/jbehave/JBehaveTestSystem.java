@@ -2,19 +2,14 @@ package org.fitnesse.testsystems.jbehave;
 
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
-import fitnesse.wikitext.Utils;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
-import org.jbehave.core.io.LoadFromRelativeFile;
 import org.jbehave.core.io.StoryLoader;
 import org.jbehave.core.model.*;
 import org.jbehave.core.reporters.*;
 import org.jbehave.core.steps.CandidateSteps;
-import org.jbehave.core.steps.Steps;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.*;
 
 import static fitnesse.wikitext.Utils.escapeHTML;

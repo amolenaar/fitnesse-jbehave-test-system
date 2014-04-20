@@ -9,6 +9,7 @@ import java.io.IOException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JBehaveTestSystemFactoryTest {
 
@@ -16,9 +17,10 @@ public class JBehaveTestSystemFactoryTest {
     public void factoryReturnsRunningTestSystemInstance() throws IOException {
         JBehaveTestSystemFactory factory = new JBehaveTestSystemFactory();
         Descriptor descriptor = mock(Descriptor.class);
+        when(descriptor.getClassPath()).thenReturn("classes");
 
         TestSystem testSystem = factory.create(descriptor);
 
-        assertThat(testSystem.isSuccessfullyStarted(), is(true));
+        assertThat(testSystem.isSuccessfullyStarted(), is(false));
     }
 }

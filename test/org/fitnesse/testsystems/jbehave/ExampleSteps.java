@@ -25,8 +25,4 @@ public class ExampleSteps extends Steps {
             throw new AssertionError("x is " + x + ", but should be " + value);
     }
 
-    @Then("pending method")
-    public void iAmPending() {
-    }
-
 }
