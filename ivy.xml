@@ -21,7 +21,7 @@
 	</publications>
  
 	<dependencies>
-		<dependency org="org.fitnesse" name="fitnesse" rev="20140418" conf="standalone->default,default" />
+		<dependency org="org.fitnesse" name="fitnesse" rev="20140418" conf="default" />
 		<dependency org="org.jbehave" name="jbehave-core" rev="4.0-beta-5" conf="standalone->default,default" />
 
 		<!-- scope: test -->
