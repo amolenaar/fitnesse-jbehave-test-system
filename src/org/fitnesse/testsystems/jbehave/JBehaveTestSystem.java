@@ -8,7 +8,9 @@ import org.jbehave.core.io.StoryLoader;
 import org.jbehave.core.model.*;
 import org.jbehave.core.reporters.*;
 import org.jbehave.core.steps.CandidateSteps;
+import org.jbehave.core.steps.InstanceStepsFactory;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
@@ -43,6 +45,51 @@ public class JBehaveTestSystem implements TestSystem {
         testSystemListener.testSystemStarted(this);
     }
 
+    @Override
+    public void bye() throws IOException, InterruptedException {
+        kill();
+    }
+
+    @Override
+    public void kill() throws IOException {
+        testSystemListener.testSystemStopped(this, new JBehaveExecutionLog(), null);
+
+        if (classLoader instanceof Closeable) {
+            ((Closeable) classLoader).close();
+        }
+    }
+
+    @Override
+    public void runTests(TestPage pageToTest) throws IOException, InterruptedException {
+        final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        testSummary = new TestSummary();
+
+        testSystemListener.testStarted(pageToTest);
+
+        try {
+            Thread.currentThread().setContextClassLoader(classLoader);
+
+            Embedder embedder = newEmbedder();
+
+            resolveCandidateSteps((WikiTestPage) pageToTest, embedder);
+
+            embedder.runStoriesAsPaths(Arrays.asList(pageToTest.getDecoratedData().getContent()));
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+            testSystemListener.testComplete(pageToTest, testSummary);
+        }
+    }
+
+    @Override
+    public boolean isSuccessfullyStarted() {
+        return started;
+    }
+
+    @Override
+    public void addTestSystemListener(TestSystemListener listener) {
+        testSystemListener.addTestSystemListener(listener);
+    }
+
     private Embedder newEmbedder() {
         Embedder embedder = new Embedder();
         embedder.configuration()
@@ -67,54 +114,30 @@ public class JBehaveTestSystem implements TestSystem {
         return embedder;
     }
 
-    @Override
-    public void bye() throws IOException, InterruptedException {
-        kill();
+    protected void resolveCandidateSteps(WikiTestPage pageToTest, Embedder embedder) {
+        Collection<String> stepNames = new StepsBuilder().getSteps(pageToTest.getSourcePage());
+
+        for (Object step : resolveClassInstances(stepNames)) {
+            if (step instanceof CandidateSteps) {
+                embedder.candidateSteps().add((CandidateSteps) step);
+            } else {
+                embedder.candidateSteps().addAll(new InstanceStepsFactory(embedder.configuration(), step).createCandidateSteps());
+            }
+        }
     }
 
-    @Override
-    public void kill() throws IOException {
-        testSystemListener.testSystemStopped(this, new JBehaveExecutionLog(), null);
-    }
-
-    @Override
-    public void runTests(TestPage pageToTest) throws IOException, InterruptedException {
-        testSummary = new TestSummary();
-
-        testSystemListener.testStarted(pageToTest);
-        Embedder embedder = newEmbedder();
-
-        Collection<String> stepNames = new StepsBuilder().getSteps(((WikiTestPage) pageToTest).getSourcePage());
-        Collection<CandidateSteps> steps = resolveClassInstances(stepNames);
-
-        embedder.candidateSteps().addAll(steps);
-
-        embedder.runStoriesAsPaths(Arrays.asList(pageToTest.getDecoratedData().getContent()));
-
-        testSystemListener.testComplete(pageToTest, testSummary);
-    }
-
-    private Collection<CandidateSteps> resolveClassInstances(Collection<String> stepNames) {
-        List<CandidateSteps> candidateSteps = new LinkedList();
+    private Collection<Object> resolveClassInstances(Collection<String> stepNames) {
+        List<Object> steps = new LinkedList();
         for (String stepName : stepNames) {
             try {
-                candidateSteps.add((CandidateSteps) classLoader.loadClass(stepName).newInstance());
+                steps.add(classLoader.loadClass(stepName).newInstance());
             } catch (Exception e) {
                 processStep(format("Unable to load steps from %s: %s", stepName, e.toString()), ExecutionResult.ERROR);
             }
         }
-        return candidateSteps;
+        return steps;
     }
 
-    @Override
-    public boolean isSuccessfullyStarted() {
-        return started;
-    }
-
-    @Override
-    public void addTestSystemListener(TestSystemListener listener) {
-        testSystemListener.addTestSystemListener(listener);
-    }
 
     private void println(String message) {
         output(format("%s<br/>", message));
@@ -238,7 +261,7 @@ public class JBehaveTestSystem implements TestSystem {
 
         @Override
         public void pending(String step) {
-            processStep(step, ExecutionResult.FAIL);
+            processStep(format("Missing step: '%s'", step), ExecutionResult.ERROR);
         }
 
         @Override
