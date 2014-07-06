@@ -1,4 +1,6 @@
-<ivy-module version="2.0">
+<ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
 	<info organisation="org.fitnesse.testsystems" module="fitnesse-jbehave">
 		<license name="Common Public License version 1.0"
 			url="http://www.opensource.org/licenses/cpl1.0" />
@@ -6,13 +8,14 @@
 			A test execiter for JBehave test scripts.
 		</description>
 	</info>
-	<configurations>
+
+    <configurations>
 		<conf name="default" visibility="public" />
 		<conf name="standalone" visibility="public" description="include in fitnesse-jbehave-standalone build" />
 		<conf name="test" visibility="public" extends="default" />
 	</configurations>
-        <!-- for publication to maven repos -->
-	<publications xmlns:e="urn:ant.apache.org:ivy-extras">
+
+    <publications xmlns:e="urn:ant.apache.org:ivy-extras">
 		<artifact name="fitnesse-jbehave" type="jar" ext="jar" />
 		<artifact name="fitnesse-jbehave" type="pom" ext="pom" />
 		<artifact name="fitnesse-jbehave" type="source" ext="jar" e:classifier="sources" />
@@ -21,8 +24,8 @@
 	</publications>
  
 	<dependencies>
-		<dependency org="org.fitnesse" name="fitnesse" rev="20140418" conf="default" />
-		<dependency org="org.jbehave" name="jbehave-core" rev="4.0-beta-5" conf="standalone->default,default" />
+		<dependency org="org.fitnesse" name="fitnesse" rev="latest.release" conf="*->default" />
+		<dependency org="org.jbehave" name="jbehave-core" rev="4.0-beta-5" conf="standalone->default;default" />
 
 		<!-- scope: test -->
 		<dependency org="org.mockito" name="mockito-core" rev="1.9.5" conf="test->default" />
