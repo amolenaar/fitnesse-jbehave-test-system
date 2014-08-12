@@ -2,6 +2,8 @@ package org.fitnesse.testsystems.jbehave;
 
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
+import fitnesse.wiki.SystemVariableSource;
+import fitnesse.wikitext.parser.VariableSource;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.io.StoryLoader;
@@ -12,6 +14,7 @@ import org.jbehave.core.steps.InstanceStepsFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.util.*;
 
 import static fitnesse.wikitext.Utils.escapeHTML;
@@ -20,15 +23,18 @@ import static java.lang.String.format;
 public class JBehaveTestSystem implements TestSystem {
 
     private final String name;
-    private final CompositeTestSystemListener testSystemListener;
     private final ClassLoader classLoader;
+    private final VariableSource variableSource;
+    private final CompositeTestSystemListener testSystemListener;
+
     private boolean started = false;
     private TestSummary testSummary;
 
-    public JBehaveTestSystem(String name, ClassLoader classLoader) {
+    public JBehaveTestSystem(String name, ClassLoader classLoader, VariableSource variableSource) {
         super();
         this.name = name;
         this.classLoader = classLoader;
+        this.variableSource = variableSource;
         this.testSystemListener = new CompositeTestSystemListener();
     }
 
@@ -52,7 +58,7 @@ public class JBehaveTestSystem implements TestSystem {
 
     @Override
     public void kill() throws IOException {
-        testSystemListener.testSystemStopped(this, new JBehaveExecutionLog(), null);
+        testSystemListener.testSystemStopped(this, null);
 
         if (classLoader instanceof Closeable) {
             ((Closeable) classLoader).close();
@@ -115,7 +121,7 @@ public class JBehaveTestSystem implements TestSystem {
     }
 
     protected void resolveCandidateSteps(WikiTestPage pageToTest, Embedder embedder) {
-        Collection<String> stepNames = new StepsBuilder().getSteps(pageToTest.getSourcePage());
+        Collection<String> stepNames = new StepsBuilder(variableSource).getSteps(pageToTest);
 
         for (Object step : resolveClassInstances(stepNames)) {
             if (step instanceof CandidateSteps) {

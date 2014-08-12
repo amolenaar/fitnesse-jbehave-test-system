@@ -15,6 +15,7 @@ classes/
 test-classes/
 test-results/
 lib/
+dist/
 target/
 fitnesse-jbehave-test-system.iml
 fitnesse-jbehave-test-system.ipr

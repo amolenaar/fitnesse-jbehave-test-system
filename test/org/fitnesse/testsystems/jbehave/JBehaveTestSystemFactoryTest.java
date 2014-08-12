@@ -5,6 +5,7 @@ import fitnesse.testsystems.TestSystem;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -15,7 +16,7 @@ public class JBehaveTestSystemFactoryTest {
 
     @Test
     public void factoryReturnsRunningTestSystemInstance() throws IOException {
-        JBehaveTestSystemFactory factory = new JBehaveTestSystemFactory();
+        JBehaveTestSystemFactory factory = new JBehaveTestSystemFactory(new Properties());
         Descriptor descriptor = mock(Descriptor.class);
         when(descriptor.getClassPath()).thenReturn("classes");
 

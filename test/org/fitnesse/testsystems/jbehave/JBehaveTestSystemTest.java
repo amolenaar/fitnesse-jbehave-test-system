@@ -3,6 +3,7 @@ package org.fitnesse.testsystems.jbehave;
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
 import fitnesse.wiki.ReadOnlyPageData;
+import fitnesse.wikitext.parser.VariableSource;
 import org.jbehave.core.embedder.Embedder;
 import org.junit.Test;
 import util.FileUtil;
@@ -22,8 +23,8 @@ public class JBehaveTestSystemTest {
 
     static class TestJBehaveTestSystem extends JBehaveTestSystem {
 
-        public TestJBehaveTestSystem(String name, ClassLoader classLoader) {
-            super(name, classLoader);
+        public TestJBehaveTestSystem(String name, ClassLoader classLoader, VariableSource variableSource) {
+            super(name, classLoader, variableSource);
         }
 
         @Override
@@ -34,14 +35,14 @@ public class JBehaveTestSystemTest {
 
     @Test
     public void shouldHaveAName() {
-        TestSystem testSystem = new JBehaveTestSystem("name", getClassLoader());
+        TestSystem testSystem = new JBehaveTestSystem("name", getClassLoader(), null);
 
         assertThat(testSystem.getName(), is("name"));
     }
 
     @Test
     public void canPerformAPassingTest() throws IOException, InterruptedException {
-        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
+        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader(), null);
         WikiTestPage pageToTest = mock(WikiTestPage.class);
         ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
         when(pageToTest.getDecoratedData()).thenReturn(pageData);
@@ -54,7 +55,7 @@ public class JBehaveTestSystemTest {
         testSystem.bye();
 
         verify(listener).testSystemStarted(testSystem);
-        verify(listener).testSystemStopped(eq(testSystem), any(JBehaveExecutionLog.class), eq((Throwable) null));
+        verify(listener).testSystemStopped(eq(testSystem), eq((Throwable) null));
         verify(listener).testStarted(pageToTest);
         verify(listener).testComplete(eq(pageToTest), any(TestSummary.class));
 
@@ -62,7 +63,7 @@ public class JBehaveTestSystemTest {
 
     @Test
     public void canPerformAFailingTest() throws IOException, InterruptedException {
-        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
+        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader(), null);
         WikiTestPage pageToTest = mock(WikiTestPage.class);
         ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
         when(pageToTest.getDecoratedData()).thenReturn(pageData);
@@ -75,7 +76,7 @@ public class JBehaveTestSystemTest {
         testSystem.bye();
 
         verify(listener).testSystemStarted(testSystem);
-        verify(listener).testSystemStopped(eq(testSystem), any(JBehaveExecutionLog.class), eq((Throwable) null));
+        verify(listener).testSystemStopped(eq(testSystem), eq((Throwable) null));
         verify(listener).testStarted(pageToTest);
         verify(listener).testComplete(eq(pageToTest), any(TestSummary.class));
         verify(listener, never()).testExceptionOccurred(eq((Assertion) null), any(ExceptionResult.class));
@@ -83,7 +84,7 @@ public class JBehaveTestSystemTest {
 
     @Test
     public void canHandlePendingSteps() throws IOException, InterruptedException {
-        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
+        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader(), null);
         WikiTestPage pageToTest = mock(WikiTestPage.class);
         ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
         when(pageToTest.getDecoratedData()).thenReturn(pageData);
@@ -96,7 +97,7 @@ public class JBehaveTestSystemTest {
         testSystem.bye();
 
         verify(listener).testSystemStarted(testSystem);
-        verify(listener).testSystemStopped(eq(testSystem), any(JBehaveExecutionLog.class), eq((Throwable) null));
+        verify(listener).testSystemStopped(eq(testSystem), eq((Throwable) null));
         verify(listener).testStarted(pageToTest);
         verify(listener).testComplete(eq(pageToTest), any(TestSummary.class));
         verify(listener, never()).testExceptionOccurred(eq((Assertion) null), any(ExceptionResult.class));

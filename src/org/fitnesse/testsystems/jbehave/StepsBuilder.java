@@ -1,8 +1,12 @@
 package org.fitnesse.testsystems.jbehave;
 
 import fitnesse.components.TraversalListener;
+import fitnesse.html.HtmlUtil;
+import fitnesse.testrunner.WikiTestPage;
+import fitnesse.testsystems.TestPage;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
+import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wikitext.parser.*;
 
 import java.util.ArrayList;
@@ -10,10 +14,16 @@ import java.util.List;
 
 public class StepsBuilder {
 
-    public List<String> getSteps(WikiPage page) {
+    private VariableSource variableSource;
+
+    public StepsBuilder(VariableSource variableSource) {
+        this.variableSource = variableSource;
+    }
+
+    public List<String> getSteps(WikiTestPage page) {
         final List<String> items = new ArrayList<String>();
 
-        page.getPageCrawler().traversePageAndAncestors(new TraversalListener<WikiPage>() {
+        page.getSourcePage().getPageCrawler().traversePageAndAncestors(new TraversalListener<WikiPage>() {
             @Override
             public void process(WikiPage p) {
                 addItemsFromPage(p, items);
@@ -29,9 +39,8 @@ public class StepsBuilder {
 
     protected List<String> getItemsFromPage(WikiPage page) {
         PageData data = page.getData();
-        Symbol tree = data.getParsedPage().getSyntaxTree();
-        ParsingPage parsingPage = data.getParsedPage().getParsingPage();
-        return new Steps(new HtmlTranslator(new WikiSourcePage(page), parsingPage)).getSteps(tree);
+        ParsedPage parsedPage = new ParsedPage(new ParsingPage(new WikiSourcePage(page), variableSource), data.getContent());
+        return new Steps(new HtmlTranslator(new WikiSourcePage(page), parsedPage.getParsingPage())).getSteps(parsedPage.getSyntaxTree());
     }
 
     private static class Steps {
