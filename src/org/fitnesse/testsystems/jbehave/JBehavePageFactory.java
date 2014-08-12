@@ -10,7 +10,6 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 public class JBehavePageFactory implements WikiPageFactory {
-    private static final Logger LOG = Logger.getLogger(JBehavePageFactory.class.getName());
     private static final String STORY_EXTENSION = ".story";
 
     private final VariableSource variableSource;
@@ -30,7 +29,6 @@ public class JBehavePageFactory implements WikiPageFactory {
 
     @Override
     public boolean supports(File path) {
-        LOG.fine("Is " + path + " a JBehave story folder?");
         if (path.isDirectory()) {
             for (String child : path.list()) {
                 if (isStoryFile(new File(path, child))) return true;
@@ -40,7 +38,6 @@ public class JBehavePageFactory implements WikiPageFactory {
     }
 
     static boolean isStoryFile(File path) {
-        LOG.fine("Is " + path + " a JBehave story file? " + (path.getName().endsWith(STORY_EXTENSION)));
         return (path.getName().endsWith(STORY_EXTENSION));
     }
 }
