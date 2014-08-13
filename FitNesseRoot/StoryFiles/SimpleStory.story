@@ -1,3 +1,7 @@
+!steps org.fitnesse.testsystems.jbehave.ExampleSteps
+
+Example scenarios for test system ${TEST_SYSTEM}
+
 Scenario: 2 squared
 
 Given a variable x with value 2
@@ -10,6 +14,3 @@ Given a variable x with value 3
 When I multiply x by 3
 Then x should equal 9
 
-!steps org.fitnesse.testsystems.jbehave.ExampleSteps
-
-Test system is ${TEST_SYSTEM}
