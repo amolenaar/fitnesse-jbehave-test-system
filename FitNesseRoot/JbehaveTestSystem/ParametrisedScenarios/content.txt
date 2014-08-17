@@ -1,4 +1,4 @@
-Scenario: squared numbers
+Scenario: squared numbers (last one fails)
 
 Given a variable x with value <value>
 When I multiply x by <value>
