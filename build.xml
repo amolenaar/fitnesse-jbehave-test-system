@@ -55,7 +55,7 @@
     </target>
 
     <target name="sources-jar">
-        <jar jarfile="${dist.dir}/fitnesse--jbehave-sources.jar" basedir="src">
+        <jar jarfile="${dist.dir}/fitnesse-jbehave-sources.jar" basedir="src">
             <include name="**" />
         </jar>
     </target>
@@ -63,7 +63,7 @@
     <target name="javadoc-jar" depends="compile">
         <mkdir dir="${javadoc.dir}" />
         <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" classpathref="classpath" />
-        <jar jarfile="${dist.dir}/fitnesse--jbehave-javadoc.jar" basedir="${javadoc.dir}" />
+        <jar jarfile="${dist.dir}/fitnesse-jbehave-javadoc.jar" basedir="${javadoc.dir}" />
 
     </target>
 
