@@ -7,8 +7,10 @@
     <property environment="env"/>
     <property name="src.dir" location="src"/>
     <property name="test.src.dir" location="test"/>
+    <property name="steps.src.dir" location="stepsrc"/>
     <property name="classes.dir" location="classes"/>
     <property name="test.classes.dir" location="test-classes"/>
+    <property name="steps.classes.dir" location="steps-classes"/>
     <property name="fitnesseRoot" value="FitNesseRoot"/>
     <property name="results.dir" location="test-results"/>
     <property name="dist.dir" location="dist"/>
@@ -21,7 +23,7 @@
   
     <target name="build" depends="clean, compile" description="clean, then compile the source"/>
 
-    <target name="run" depends="test-compile, retrieve" description="Start FitNesse from the command line">
+    <target name="run" depends="test-compile, classpath-page" description="Start FitNesse from the command line">
         <java classpathref="classpath" classname="fitnesseMain.FitNesseMain" fork="true" failonerror="true">
             <arg value="-v" />
             <arg value="-p" />
@@ -29,9 +31,20 @@
         </java>
     </target>
 
+    <target name="classpath-page" depends="steps-compile" description="Create classpath file">
+        <pathconvert pathsep="${line.separator}" property="pageContent" refid="fitnesse.classpath">
+            <map from="" to="!path "/>
+        </pathconvert>
+        <mkdir dir="FitNesseRoot/JbehaveClassPath" />
+        <echo file="FitNesseRoot/JbehaveClassPath/content.txt">Generated classpath for JBehave tests:${line.separator}${line.separator}${pageContent}</echo>
+    </target>
 
     <target name="retrieve" depends="resolve" description="Copy dependencies to lib/, mainly for Acceptance tests and IDE's">
         <ivy:retrieve pattern="${lib.dir}/[artifact].[ext]" type="jar" conf="default,test" />
+    </target>
+
+    <target name="dependencies" depends="resolve" description="Generate a dependencies graph">
+        <ivy:report conf="*" todir="dependencies" />
     </target>
 
     <!--
@@ -72,14 +85,20 @@
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" debug="true" source="1.7" target="1.7" includeantruntime="false" />
     </target>
 
-    <target name="test-compile" depends="compile" description="compile the source (make)">
+    <target name="steps-compile" depends="compile" description="compile the source (make)">
+        <mkdir dir="${steps.classes.dir}" />
+        <javac srcdir="${steps.src.dir}" destdir="${steps.classes.dir}" classpathref="classpath" debug="true" source="1.7" target="1.7" includeantruntime="false" />
+    </target>
+
+    <target name="test-compile" depends="compile,steps-compile" description="compile the source (make)">
         <mkdir dir="${test.classes.dir}" />
-        <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" classpathref="classpath" debug="true" source="1.7" target="1.7" includeantruntime="false" />
+        <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" classpathref="test.classpath" debug="true" source="1.7" target="1.7" includeantruntime="false" />
     </target>
 
     <target name="clean" description="delete everything in the classes directory">
         <delete dir="${classes.dir}" />
         <delete dir="${test.classes.dir}" />
+        <delete dir="${steps.classes.dir}" />
         <delete dir="${results.dir}" />
         <delete dir="${dist.dir}" />
         <delete dir="${javadoc.dir}" />
@@ -88,7 +107,7 @@
     <target name="test" depends="test-compile" description="run the unit tests">
         <mkdir dir="${results.dir}" />
         <junit forkmode="once" fork="yes" printsummary="no" haltonfailure="yes" haltonerror="yes" dir="${basedir}">
-            <classpath refid="classpath" />
+            <classpath refid="test.classpath" />
             <formatter type="xml" usefile="true" />
             <formatter type="plain" usefile="false" />
             <batchtest todir="${results.dir}">
@@ -103,11 +122,21 @@
 
     <target name="resolve" depends="ivy-init">
         <ivy:resolve />
-        <ivy:cachepath pathid="lib.classpath" />
+        <ivy:cachepath pathid="default.lib.classpath" conf="default"/>
+        <ivy:cachepath pathid="test.lib.classpath" conf="default,test" />
         <path id="classpath">
             <pathelement path="${classes.dir}" />
+            <path refid="default.lib.classpath" />
+        </path>
+        <path id="test.classpath">
+            <pathelement path="${classes.dir}" />
+            <pathelement path="${steps.classes.dir}" />
             <pathelement path="${test.classes.dir}" />
-            <path refid="lib.classpath" />
+            <path refid="test.lib.classpath" />
+        </path>
+        <path id="fitnesse.classpath">
+            <pathelement path="${steps.classes.dir}" />
+            <path refid="default.lib.classpath" />
         </path>
     </target>
 

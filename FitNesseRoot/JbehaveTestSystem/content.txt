@@ -10,12 +10,6 @@ Summary:
 
 !define TEST_SYSTEM {jbehave}
 
-!path classes/
-!path test-classes/
-!path lib/*.jar
+!steps org.fitnesse.jbehave.ExampleSteps
 
-!steps org.fitnesse.testsystems.jbehave.ExampleSteps
-
-!**> Please not that ''test-classes/'' is not in our own class path:
-${java.class.path}
-*!
+!include -c .JbehaveClassPath
