@@ -1,11 +1,11 @@
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-	<info organisation="org.fitnesse.testsystems" module="fitnesse-jbehave">
+	<info organisation="org.fitnesse.jbehave" module="fitnesse-jbehave">
 		<license name="Common Public License version 1.0"
 			url="http://www.opensource.org/licenses/cpl1.0" />
 		<description homepage="http://github.com/amolenaar/fitnesse-jbehave-test-system">
-			A test execiter for JBehave test scripts.
+			A test executor for JBehave test scripts.
 		</description>
 	</info>
 
@@ -25,7 +25,12 @@
  
 	<dependencies>
 		<dependency org="org.fitnesse" name="fitnesse" rev="latest.integration" conf="*->default" />
-		<dependency org="org.jbehave" name="jbehave-core" rev="4.0-beta-5" conf="standalone->default;default" />
+		<dependency org="org.jbehave" name="jbehave-core" rev="4.0-beta-5" conf="standalone->default;default">
+            <exclude org="org.hamcrest" />
+            <exclude org="junit" />
+            <exclude org="com.thoughtworks.xstream" />
+            <exclude org="org.freemarker" />
+        </dependency>
 
 		<!-- scope: test -->
 		<dependency org="org.mockito" name="mockito-core" rev="1.9.5" conf="test->default" />
