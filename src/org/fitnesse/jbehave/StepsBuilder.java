@@ -1,12 +1,9 @@
-package org.fitnesse.testsystems.jbehave;
+package org.fitnesse.jbehave;
 
 import fitnesse.components.TraversalListener;
-import fitnesse.html.HtmlUtil;
 import fitnesse.testrunner.WikiTestPage;
-import fitnesse.testsystems.TestPage;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
-import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wikitext.parser.*;
 
 import java.util.ArrayList;

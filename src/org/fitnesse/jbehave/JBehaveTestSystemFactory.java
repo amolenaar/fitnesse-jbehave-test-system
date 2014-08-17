@@ -1,4 +1,4 @@
-package org.fitnesse.testsystems.jbehave;
+package org.fitnesse.jbehave;
 
 import fitnesse.testsystems.Descriptor;
 import fitnesse.testsystems.TestSystem;

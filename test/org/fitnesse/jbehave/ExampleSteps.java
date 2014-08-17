@@ -1,4 +1,4 @@
-package org.fitnesse.testsystems.jbehave;
+package org.fitnesse.jbehave;
 
 import org.jbehave.core.annotations.*;
 import org.jbehave.core.steps.Steps;

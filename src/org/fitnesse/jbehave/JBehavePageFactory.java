@@ -1,4 +1,4 @@
-package org.fitnesse.testsystems.jbehave;
+package org.fitnesse.jbehave;
 
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
@@ -7,7 +7,6 @@ import fitnesse.wikitext.parser.VariableSource;
 
 import java.io.File;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 public class JBehavePageFactory implements WikiPageFactory {
     private static final String STORY_EXTENSION = ".story";

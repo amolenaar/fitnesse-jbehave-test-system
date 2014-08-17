@@ -1,4 +1,4 @@
-package org.fitnesse.testsystems.jbehave;
+package org.fitnesse.jbehave;
 
 import fitnesse.wiki.*;
 import fitnesse.wikitext.parser.VariableSource;

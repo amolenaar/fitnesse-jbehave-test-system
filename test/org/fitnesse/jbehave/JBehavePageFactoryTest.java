@@ -1,4 +1,4 @@
-package org.fitnesse.testsystems.jbehave;
+package org.fitnesse.jbehave;
 
 import fitnesse.wiki.SymbolicPage;
 import fitnesse.wiki.WikiPage;

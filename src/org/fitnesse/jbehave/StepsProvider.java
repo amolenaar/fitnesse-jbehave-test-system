@@ -1,4 +1,4 @@
-package org.fitnesse.testsystems.jbehave;
+package org.fitnesse.jbehave;
 
 import fitnesse.wikitext.parser.Symbol;
 import fitnesse.wikitext.parser.Translator;

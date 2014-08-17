@@ -1,8 +1,7 @@
-package org.fitnesse.testsystems.jbehave;
+package org.fitnesse.jbehave;
 
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
-import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wikitext.parser.VariableSource;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
@@ -14,7 +13,6 @@ import org.jbehave.core.steps.InstanceStepsFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.URLClassLoader;
 import java.util.*;
 
 import static fitnesse.wikitext.Utils.escapeHTML;
