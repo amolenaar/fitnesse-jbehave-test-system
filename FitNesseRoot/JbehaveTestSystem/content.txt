@@ -11,5 +11,3 @@ Summary:
 !define TEST_SYSTEM {jbehave}
 
 !steps org.fitnesse.jbehave.ExampleSteps
-
-!include -c .JbehaveClassPath

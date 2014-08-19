@@ -1,4 +1,4 @@
-!steps org.fitnesse.testsystems.jbehave.ExampleSteps
+!steps org.fitnesse.jbehave.ExampleSteps
 
 Example scenarios for test system ${TEST_SYSTEM}
 

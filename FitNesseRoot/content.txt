@@ -1,2 +1,2 @@
-
+!include -c .JbehaveClassPath
 !define TEST_SYSTEM {jbehave}
