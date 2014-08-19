@@ -23,8 +23,8 @@ public class JBehaveTestSystemTest {
 
     static class TestJBehaveTestSystem extends JBehaveTestSystem {
 
-        public TestJBehaveTestSystem(String name, ClassLoader classLoader, VariableSource variableSource) {
-            super(name, classLoader, variableSource);
+        public TestJBehaveTestSystem(String name, ClassLoader classLoader) {
+            super(name, classLoader);
         }
 
         @Override
@@ -35,14 +35,14 @@ public class JBehaveTestSystemTest {
 
     @Test
     public void shouldHaveAName() {
-        TestSystem testSystem = new JBehaveTestSystem("name", getClassLoader(), null);
+        TestSystem testSystem = new JBehaveTestSystem("name", getClassLoader());
 
         assertThat(testSystem.getName(), is("name"));
     }
 
     @Test
     public void canPerformAPassingTest() throws IOException, InterruptedException {
-        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader(), null);
+        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
         ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
         when(pageToTest.getDecoratedData()).thenReturn(pageData);
@@ -63,7 +63,7 @@ public class JBehaveTestSystemTest {
 
     @Test
     public void canPerformAFailingTest() throws IOException, InterruptedException {
-        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader(), null);
+        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
         ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
         when(pageToTest.getDecoratedData()).thenReturn(pageData);
@@ -84,7 +84,7 @@ public class JBehaveTestSystemTest {
 
     @Test
     public void canHandlePendingSteps() throws IOException, InterruptedException {
-        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader(), null);
+        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
         ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
         when(pageToTest.getDecoratedData()).thenReturn(pageData);

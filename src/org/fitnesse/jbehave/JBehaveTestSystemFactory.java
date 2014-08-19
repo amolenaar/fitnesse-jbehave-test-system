@@ -15,20 +15,10 @@ import java.util.Properties;
 
 public class JBehaveTestSystemFactory implements TestSystemFactory {
 
-    private VariableSource variableSource;
-
-    public JBehaveTestSystemFactory(Properties properties) {
-        this(new SystemVariableSource(properties));
-    }
-
-    public JBehaveTestSystemFactory(VariableSource variableSource) {
-        this.variableSource = variableSource;
-    }
-
     @Override
     public TestSystem create(Descriptor descriptor) throws IOException {
         URLClassLoader classLoader = new URLClassLoader(getUrlsFromClassPath(descriptor), getClass().getClassLoader());
-        return new JBehaveTestSystem(descriptor.getTestSystem(), classLoader, variableSource);
+        return new JBehaveTestSystem(descriptor.getTestSystem(), classLoader);
     }
 
     private URL[] getUrlsFromClassPath(Descriptor descriptor) throws MalformedURLException {

@@ -22,17 +22,15 @@ public class JBehaveTestSystem implements TestSystem {
 
     private final String name;
     private final ClassLoader classLoader;
-    private final VariableSource variableSource;
     private final CompositeTestSystemListener testSystemListener;
 
     private boolean started = false;
     private TestSummary testSummary;
 
-    public JBehaveTestSystem(String name, ClassLoader classLoader, VariableSource variableSource) {
+    public JBehaveTestSystem(String name, ClassLoader classLoader) {
         super();
         this.name = name;
         this.classLoader = classLoader;
-        this.variableSource = variableSource;
         this.testSystemListener = new CompositeTestSystemListener();
     }
 
@@ -119,7 +117,7 @@ public class JBehaveTestSystem implements TestSystem {
     }
 
     protected void resolveCandidateSteps(WikiTestPage pageToTest, Embedder embedder) {
-        Collection<String> stepNames = new StepsBuilder(variableSource).getSteps(pageToTest);
+        Collection<String> stepNames = new StepsBuilder().getSteps(pageToTest);
 
         for (Object step : resolveClassInstances(stepNames)) {
             if (step instanceof CandidateSteps) {

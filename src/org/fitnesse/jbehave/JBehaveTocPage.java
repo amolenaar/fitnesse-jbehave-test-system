@@ -3,36 +3,20 @@ package org.fitnesse.jbehave;
 import fitnesse.wiki.*;
 import fitnesse.wikitext.parser.VariableSource;
 import fitnesse.wikitext.parser.WikiWordPath;
-import util.Maybe;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class JBehaveTocPage implements WikiPage {
+public class JBehaveTocPage extends BaseWikiPage {
     private static final String CONTENTS = "!contents";
 
     private final File path;
-    private final String name;
-    private final WikiPage parent;
-    private final VariableSource variableSource;
 
     public JBehaveTocPage(File path, String name, WikiPage parent, VariableSource variableSource) {
+        super(name, parent, variableSource);
         this.path = path;
-        this.name = name;
-        this.parent = parent;
-        this.variableSource = variableSource;
-    }
-
-    @Override
-    public WikiPage getParent() {
-        return parent;
-    }
-
-    @Override
-    public boolean isRoot() {
-        return parent == null;
     }
 
     @Override
@@ -67,16 +51,11 @@ public class JBehaveTocPage implements WikiPage {
             File childPath = new File(path, child);
             if (JBehavePageFactory.isStoryFile(childPath)) {
                 children.add(new JBehaveStoryPage(childPath,
-                        WikiWordPath.makeWikiWord(child.split("\\.", 2)[0]), this, variableSource));
+                        WikiWordPath.makeWikiWord(child.split("\\.", 2)[0]), this, getVariableSource()));
             }
             // TODO: else: nested story directory?
         }
         return children;
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override
@@ -110,24 +89,4 @@ public class JBehaveTocPage implements WikiPage {
         return null;
     }
 
-    @Override
-    public PageCrawler getPageCrawler() {
-        return new PageCrawlerImpl(this);
-    }
-
-    @Override
-    public String getVariable(String name) {
-        Maybe<String> variable = variableSource.findVariable(name);
-        if (variable.isNothing()) {
-            return parent != null ? parent.getVariable(name) : null;
-        }
-
-        // TODO: substitute in context of current page
-        return variable.getValue();
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
 }

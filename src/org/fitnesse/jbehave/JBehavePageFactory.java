@@ -1,5 +1,6 @@
 package org.fitnesse.jbehave;
 
+import fitnesse.wiki.BaseWikiPage;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
@@ -23,7 +24,7 @@ public class JBehavePageFactory implements WikiPageFactory {
 
     @Override
     public WikiPage makePage(File path, String pageName, WikiPage parent) {
-        return new JBehaveTocPage(path, pageName, parent, variableSource);
+        return new JBehaveTocPage(path, pageName, (BaseWikiPage) parent, variableSource);
     }
 
     @Override

@@ -16,7 +16,7 @@ public class JBehaveTestSystemFactoryTest {
 
     @Test
     public void factoryReturnsRunningTestSystemInstance() throws IOException {
-        JBehaveTestSystemFactory factory = new JBehaveTestSystemFactory(new Properties());
+        JBehaveTestSystemFactory factory = new JBehaveTestSystemFactory();
         Descriptor descriptor = mock(Descriptor.class);
         when(descriptor.getClassPath()).thenReturn("classes");
 

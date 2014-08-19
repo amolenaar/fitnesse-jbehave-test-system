@@ -13,28 +13,13 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 
-public class JBehaveStoryPage implements WikiPage {
+public class JBehaveStoryPage extends BaseWikiPage {
     private final File path;
-    private final String name;
-    private final WikiPage parent;
-    private final VariableSource variableSource;
     private String content;
 
     public JBehaveStoryPage(File path, String name, WikiPage parent, VariableSource variableSource) {
+        super(name, parent, variableSource);
         this.path = path;
-        this.name = name;
-        this.parent = parent;
-        this.variableSource = variableSource;
-    }
-
-    @Override
-    public WikiPage getParent() {
-        return parent;
-    }
-
-    @Override
-    public boolean isRoot() {
-        return false;
     }
 
     @Override
@@ -54,17 +39,12 @@ public class JBehaveStoryPage implements WikiPage {
 
     @Override
     public void removeChildPage(String name) {
-
+        // no-op
     }
 
     @Override
     public List<WikiPage> getChildren() {
         return emptyList();
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override
@@ -89,11 +69,6 @@ public class JBehaveStoryPage implements WikiPage {
         return null;
     }
 
-    @Override
-    public String getHtml() {
-        return WikiPageUtil.makeHtml(this, variableSource);
-    }
-
     private String readContent() {
         if (content == null) {
             try {
@@ -110,24 +85,4 @@ public class JBehaveStoryPage implements WikiPage {
         return null;
     }
 
-    @Override
-    public PageCrawler getPageCrawler() {
-        return new PageCrawlerImpl(this);
-    }
-
-    @Override
-    public String getVariable(String name) {
-        Maybe<String> variable = variableSource.findVariable(name);
-        if (variable.isNothing()) {
-            return parent != null ? parent.getVariable(name) : null;
-        }
-
-        // TODO: substitute in context of current page
-        return variable.getValue();
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
 }

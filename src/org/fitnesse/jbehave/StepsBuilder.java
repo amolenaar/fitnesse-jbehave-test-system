@@ -2,20 +2,16 @@ package org.fitnesse.jbehave;
 
 import fitnesse.components.TraversalListener;
 import fitnesse.testrunner.WikiTestPage;
+import fitnesse.wiki.BaseWikiPage;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
+import fitnesse.wiki.WikitextPage;
 import fitnesse.wikitext.parser.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StepsBuilder {
-
-    private VariableSource variableSource;
-
-    public StepsBuilder(VariableSource variableSource) {
-        this.variableSource = variableSource;
-    }
 
     public List<String> getSteps(WikiTestPage page) {
         final List<String> items = new ArrayList<String>();
@@ -30,14 +26,14 @@ public class StepsBuilder {
     }
 
     private void addItemsFromPage(WikiPage itemPage, List<String> items) {
-        List<String> itemsOnThisPage = getItemsFromPage(itemPage);
-        items.addAll(itemsOnThisPage);
+        if (itemPage instanceof WikitextPage) {
+            List < String > itemsOnThisPage = getItemsFromPage((WikitextPage) itemPage);
+            items.addAll(itemsOnThisPage);
+        }
     }
 
-    protected List<String> getItemsFromPage(WikiPage page) {
-        PageData data = page.getData();
-        ParsedPage parsedPage = new ParsedPage(new ParsingPage(new WikiSourcePage(page), variableSource), data.getContent());
-        return new Steps(new HtmlTranslator(new WikiSourcePage(page), parsedPage.getParsingPage())).getSteps(parsedPage.getSyntaxTree());
+    protected List<String> getItemsFromPage(WikitextPage wikitext) {
+        return new Steps(new HtmlTranslator(wikitext.getParsingPage().getPage(), wikitext.getParsingPage())).getSteps(wikitext.getSyntaxTree());
     }
 
     private static class Steps {
