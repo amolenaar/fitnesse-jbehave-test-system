@@ -80,11 +80,6 @@ public class JBehaveTocPage extends BaseWikiPage {
     }
 
     @Override
-    public String getHtml() {
-        return WikiPageUtil.makeHtml(this, getData());
-    }
-
-    @Override
     public VersionInfo commit(PageData data) {
         return null;
     }

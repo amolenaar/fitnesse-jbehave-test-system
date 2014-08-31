@@ -18,6 +18,11 @@ import java.util.*;
 import static fitnesse.wikitext.Utils.escapeHTML;
 import static java.lang.String.format;
 
+/**
+ * <p>JBehave test system.</p>
+ *
+ * <p>NB. It requires TestPage's of the type WikiTestPage.</p>
+ */
 public class JBehaveTestSystem implements TestSystem {
 
     private final String name;
@@ -75,7 +80,7 @@ public class JBehaveTestSystem implements TestSystem {
 
             resolveCandidateSteps((WikiTestPage) pageToTest, embedder);
 
-            embedder.runStoriesAsPaths(Arrays.asList(pageToTest.getDecoratedData().getContent()));
+            embedder.runStoriesAsPaths(Arrays.asList(((WikiTestPage) pageToTest).getData().getContent()));
         } finally {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
             testSystemListener.testComplete(pageToTest, testSummary);
@@ -204,7 +209,7 @@ public class JBehaveTestSystem implements TestSystem {
 
         @Override
         public void beforeScenario(String scenarioTitle) {
-            println(format("<h3>Scenario: %s</h3><div class='scenario'>", escapeHTML(scenarioTitle)));
+            println(format("<h3>Scenario: %s</h3><div class='jbehave-scenario'>", escapeHTML(scenarioTitle)));
         }
 
         @Override
@@ -229,7 +234,7 @@ public class JBehaveTestSystem implements TestSystem {
 
         @Override
         public void beforeExamples(List<String> steps, ExamplesTable table) {
-            output("<div class='scenario'>");
+            output("<div class='jbehave-scenario'>");
         }
 
         @Override

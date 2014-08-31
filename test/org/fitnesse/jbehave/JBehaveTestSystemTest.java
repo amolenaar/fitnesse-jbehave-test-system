@@ -2,6 +2,7 @@ package org.fitnesse.jbehave;
 
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
+import fitnesse.wiki.PageData;
 import fitnesse.wiki.ReadOnlyPageData;
 import fitnesse.wikitext.parser.VariableSource;
 import org.jbehave.core.embedder.Embedder;
@@ -44,8 +45,8 @@ public class JBehaveTestSystemTest {
     public void canPerformAPassingTest() throws IOException, InterruptedException {
         JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
-        ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
-        when(pageToTest.getDecoratedData()).thenReturn(pageData);
+        PageData pageData = mock(PageData.class);
+        when(pageToTest.getData()).thenReturn(pageData);
         when(pageData.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/PassingJbehaveTest/content.txt")));
         TestSystemListener listener = mock(TestSystemListener.class);
         testSystem.addTestSystemListener(listener);
@@ -65,8 +66,8 @@ public class JBehaveTestSystemTest {
     public void canPerformAFailingTest() throws IOException, InterruptedException {
         JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
-        ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
-        when(pageToTest.getDecoratedData()).thenReturn(pageData);
+        PageData pageData = mock(PageData.class);
+        when(pageToTest.getData()).thenReturn(pageData);
         when(pageData.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/FailingJbehaveTest/content.txt")));
         TestSystemListener listener = mock(TestSystemListener.class);
         testSystem.addTestSystemListener(listener);
@@ -86,8 +87,8 @@ public class JBehaveTestSystemTest {
     public void canHandlePendingSteps() throws IOException, InterruptedException {
         JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
-        ReadOnlyPageData pageData = mock(ReadOnlyPageData.class);
-        when(pageToTest.getDecoratedData()).thenReturn(pageData);
+        PageData pageData = mock(PageData.class);
+        when(pageToTest.getData()).thenReturn(pageData);
         when(pageData.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/FailingJbehaveTest/content.txt")));
         TestSystemListener listener = mock(TestSystemListener.class);
         testSystem.addTestSystemListener(listener);
