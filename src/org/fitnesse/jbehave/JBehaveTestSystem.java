@@ -2,7 +2,6 @@ package org.fitnesse.jbehave;
 
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
-import fitnesse.wikitext.parser.VariableSource;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.io.StoryLoader;
@@ -105,6 +104,11 @@ public class JBehaveTestSystem implements TestSystem {
                     public String loadStoryAsText(String storyPath) {
                         // We pass in the story text, so just pass it through
                         return storyPath;
+                    }
+
+                    @Override
+                    public String loadResourceAsText(String resourcePath) {
+                        throw new IllegalStateException("Should not load resources as text.");
                     }
                 })
                 .useStoryReporterBuilder(new StoryReporterBuilder().withFormats(new Format("FITNESSE") {
