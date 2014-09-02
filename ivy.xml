@@ -1,7 +1,7 @@
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-	<info organisation="org.fitnesse.jbehave" module="fitnesse-jbehave">
+	<info organisation="org.fitnesse.jbehave" module="fitnesse-jbehave" revision="0.1">
 		<license name="Common Public License version 1.0"
 			url="http://www.opensource.org/licenses/cpl1.0" />
 		<description homepage="http://github.com/amolenaar/fitnesse-jbehave-test-system">

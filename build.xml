@@ -141,8 +141,8 @@
     </target>
 
     <target name="pom" depends="resolve">
-        <ivy:deliver deliverpattern="${dist.dir}/ivy.xml" pubrevision="${version}" status="release" />
-        <ivy:makepom ivyfile="${dist.dir}/ivy.xml" templatefile="extra/maven/pom.xml.template" pomfile="${dist.dir}/fitnesse.pom" conf="standalone,default,test">
+        <ivy:deliver deliverpattern="${dist.dir}/ivy.xml" status="release" />
+        <ivy:makepom ivyfile="${dist.dir}/ivy.xml" templatefile="pom.xml.template" pomfile="${dist.dir}/fitnesse.pom" conf="standalone,default,test">
                <mapping conf="standalone" scope="compile" />
                <mapping conf="test" scope="test" />
         </ivy:makepom>
@@ -150,7 +150,6 @@
 
     <target name="snapshot" depends="resolve,pom">
         <ivy:publish resolver="sonatype-nexus-snapshots"
-            pubrevision="${version}"
             publishivy="false">
             <artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]" />
         </ivy:publish>
@@ -163,7 +162,6 @@
         <ivy:settings id="ivy.publish.instance"
             file="ivysettings-sonatype.xml" />
         <ivy:publish resolver="sonatype-nexus-staging"
-            pubrevision="${version}"
             publishivy="false"
             settingsref="ivy.publish.instance"
             overwrite="true">

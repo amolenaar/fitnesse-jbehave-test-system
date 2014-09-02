@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${ivy.pom.groupId}</groupId>
+  <artifactId>${ivy.pom.artifactId}</artifactId>
+  <packaging>${ivy.pom.packaging}</packaging>
+  <version>${ivy.pom.version}</version>
+  <name>FitNesse JBehave integration</name>
+  <url>${ivy.pom.url}</url>
+
+  <description>
+    JBehave support for FitNesse, the fully integrated standalone wiki, and acceptance testing framework.
+  </description>
+
+  <licenses>
+    <license>
+      <name>Apache License version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git://github.com/amolenaar/fitnesse-jbehave-test-system.git</connection>
+    <developerConnection>scm:git:git@github.com:amolenaar/fitnesse-jbehave-test-system.git</developerConnection>
+    <url>scm:git:http://github.com/amolenaar/fitnesse-jbehave-test-system</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>amolenaar</id>
+      <name>Arjan Molenaar</name>
+      <email>gaphor@gmail.com</email>
+    </developer>
+  </developers>
+
+</project>
