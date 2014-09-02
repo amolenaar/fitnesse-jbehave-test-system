@@ -2,7 +2,6 @@ package org.fitnesse.jbehave;
 
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
-import fitnesse.wikitext.parser.VariableSource;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.io.StoryLoader;
