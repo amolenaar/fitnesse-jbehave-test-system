@@ -1,2 +1,7 @@
 !include -c .JbehaveClassPath
+
 !define TEST_SYSTEM {jbehave}
+
+!**> Please note that the teststeps classes directory is not in FitNesse's own classpath:
+${java.class.path}
+*!
