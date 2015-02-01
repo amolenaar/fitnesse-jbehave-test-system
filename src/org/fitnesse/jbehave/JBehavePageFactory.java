@@ -24,7 +24,7 @@ public class JBehavePageFactory implements WikiPageFactory {
 
     @Override
     public WikiPage makePage(File path, String pageName, WikiPage parent) {
-        return new JBehaveTocPage(path, pageName, (BaseWikiPage) parent, variableSource);
+        return new JBehaveTocPage(path, pageName, parent, variableSource);
     }
 
     @Override

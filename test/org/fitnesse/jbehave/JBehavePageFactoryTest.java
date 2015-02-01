@@ -67,6 +67,6 @@ public class JBehavePageFactoryTest {
 
         assertThat(children, not(nullValue()));
         assertThat(children.size(), is(1));
-        assertThat(children.get(0).getName(), is("SimplestorY"));
+        assertThat(children.get(0).getName(), is("simplestory"));
     }
 }

@@ -1,10 +1,12 @@
 package org.fitnesse.jbehave;
 
+import fitnesse.testsystems.ClassPath;
 import fitnesse.testsystems.Descriptor;
 import fitnesse.testsystems.TestSystem;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -18,7 +20,7 @@ public class JBehaveTestSystemFactoryTest {
     public void factoryReturnsRunningTestSystemInstance() throws IOException {
         JBehaveTestSystemFactory factory = new JBehaveTestSystemFactory();
         Descriptor descriptor = mock(Descriptor.class);
-        when(descriptor.getClassPath()).thenReturn("classes");
+        when(descriptor.getClassPath()).thenReturn(new ClassPath(Arrays.asList("classes"), ":"));
 
         TestSystem testSystem = factory.create(descriptor);
 

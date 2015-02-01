@@ -2,11 +2,12 @@ package org.fitnesse.jbehave;
 
 import fitnesse.components.TraversalListener;
 import fitnesse.testrunner.WikiTestPage;
-import fitnesse.wiki.BaseWikiPage;
-import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikitextPage;
-import fitnesse.wikitext.parser.*;
+import fitnesse.wikitext.parser.HtmlTranslator;
+import fitnesse.wikitext.parser.Symbol;
+import fitnesse.wikitext.parser.SymbolTreeWalker;
+import fitnesse.wikitext.parser.Translator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class StepsBuilder {
 
     private void addItemsFromPage(WikiPage itemPage, List<String> items) {
         if (itemPage instanceof WikitextPage) {
-            List < String > itemsOnThisPage = getItemsFromPage((WikitextPage) itemPage);
+            List<String> itemsOnThisPage = getItemsFromPage((WikitextPage) itemPage);
             items.addAll(itemsOnThisPage);
         }
     }

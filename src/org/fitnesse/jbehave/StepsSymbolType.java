@@ -1,7 +1,6 @@
 package org.fitnesse.jbehave;
 
 import fitnesse.wikitext.parser.*;
-import util.Maybe;
 
 import java.util.Arrays;
 import java.util.Collection;

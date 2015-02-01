@@ -1,5 +1,6 @@
 package org.fitnesse.jbehave;
 
+import fitnesse.html.HtmlUtil;
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
 import org.jbehave.core.embedder.Embedder;
@@ -14,7 +15,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
-import static fitnesse.wikitext.Utils.escapeHTML;
+import static fitnesse.html.HtmlUtil.escapeHTML;
 import static java.lang.String.format;
 
 /**

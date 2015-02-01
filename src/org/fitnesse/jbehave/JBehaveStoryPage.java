@@ -3,12 +3,10 @@ package org.fitnesse.jbehave;
 import fitnesse.wiki.*;
 import fitnesse.wikitext.parser.VariableSource;
 import util.FileUtil;
-import util.Maybe;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
