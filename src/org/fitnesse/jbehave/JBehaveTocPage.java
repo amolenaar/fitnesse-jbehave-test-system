@@ -2,7 +2,6 @@ package org.fitnesse.jbehave;
 
 import fitnesse.wiki.*;
 import fitnesse.wikitext.parser.VariableSource;
-import fitnesse.wikitext.parser.WikiWordPath;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,9 +50,11 @@ public class JBehaveTocPage extends BaseWikiPage {
             File childPath = new File(path, child);
             if (JBehavePageFactory.isStoryFile(childPath)) {
                 children.add(new JBehaveStoryPage(childPath,
-                        WikiWordPath.makeWikiWord(child.split("\\.", 2)[0]), this, getVariableSource()));
+                        child.split("\\.", 2)[0], this, getVariableSource()));
+            } else if (childPath.isDirectory()) {
+                children.add(new JBehaveTocPage(childPath,
+                        childPath.getName(), this, getVariableSource()));
             }
-            // TODO: else: nested story directory?
         }
         return children;
     }
