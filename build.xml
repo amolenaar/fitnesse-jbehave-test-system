@@ -56,16 +56,25 @@
 
         <jar jarfile="${dist.dir}/fitnesse-jbehave.jar" basedir="${classes.dir}">
             <include name="**" />
+            <service type="fitnesse.plugins.PluginFeatureFactory"
+                     provider="org.fitnesse.jbehave.Plugin"/>
         </jar>
     </target>
 
     <target name="standalone-jar" depends="jar" description="generate the standalone jar file">
         <ivy:cachefileset setid="standalone.jar.fileset" conf="standalone" />
-        <jar jarfile="${dist.dir}/fitnesse-jbehave-standalone.jar">
-            <zipfileset src="${dist.dir}/fitnesse-jbehave.jar" />
+        <!-- Create a temporary file, so we can remove all META-INF stuff when packaging the real thing -->
+        <zip destfile="${dist.dir}/.standalone-jar-dependencies.tmp">
             <zipgroupfileset refid="standalone.jar.fileset" />
+        </zip>
+        <jar destfile="${dist.dir}/fitnesse-jbehave-standalone.jar">
+            <zipfileset src="${dist.dir}/fitnesse-jbehave.jar" />
+            <zipfileset src="${dist.dir}/.standalone-jar-dependencies.tmp" excludes="META-INF/**" />
         </jar>
+        <delete file="${dist.dir}/.standalone-jar-dependencies.tmp" />
     </target>
+
+
 
     <target name="sources-jar">
         <jar jarfile="${dist.dir}/fitnesse-jbehave-sources.jar" basedir="src">
