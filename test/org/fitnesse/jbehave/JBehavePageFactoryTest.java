@@ -1,6 +1,7 @@
 package org.fitnesse.jbehave;
 
 import fitnesse.wiki.SymbolicPage;
+import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.fs.FileSystemPage;
 import fitnesse.wiki.fs.FileSystemPageFactory;
@@ -9,7 +10,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -21,8 +21,8 @@ public class JBehavePageFactoryTest {
     @Before
     public void setUp() {
         factory = new FileSystemPageFactory();
-        factory.registerWikiPageFactory(new JBehavePageFactory(new Properties()));
-        root = factory.makePage(new File("./FitNesseRoot"), "FitNesseRoot", null);
+        factory.registerWikiPageFactory(new JBehavePageFactory());
+        root = factory.makePage(new File("./FitNesseRoot"), "FitNesseRoot", null, new SystemVariableSource());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class JBehavePageFactoryTest {
         assertThat(((SymbolicPage) page).getRealPage(), instanceOf(JBehaveTocPage.class));
 
         assertThat(children, not(nullValue()));
-        assertThat(children.size(), is(1));
+        assertThat(children.size(), is(2));
         assertThat(children.get(0).getName(), is("simplestory"));
     }
 }
