@@ -17,6 +17,7 @@ test-results/
 lib/
 dist/
 target/
+javadoc/
 fitnesse-jbehave-test-system.iml
 fitnesse-jbehave-test-system.ipr
 fitnesse-jbehave-test-system.iws
