@@ -5,6 +5,7 @@ import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.*;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
+import org.jbehave.core.io.CodeLocations;
 import org.jbehave.core.io.StoryLoader;
 import org.jbehave.core.model.*;
 import org.jbehave.core.reporters.*;
@@ -12,7 +13,10 @@ import org.jbehave.core.steps.CandidateSteps;
 import org.jbehave.core.steps.InstanceStepsFactory;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 import static fitnesse.html.HtmlUtil.escapeHTML;
@@ -97,7 +101,7 @@ public class JBehaveTestSystem implements TestSystem {
         testSystemListener.addTestSystemListener(listener);
     }
 
-    private Embedder newEmbedder() {
+    private Embedder newEmbedder() throws MalformedURLException {
         Embedder embedder = new Embedder();
         embedder.configuration()
                 .useStoryLoader(new StoryLoader() {
@@ -112,12 +116,15 @@ public class JBehaveTestSystem implements TestSystem {
                         throw new IllegalStateException("Should not load resources as text.");
                     }
                 })
-                .useStoryReporterBuilder(new StoryReporterBuilder().withFormats(new Format("FITNESSE") {
-                    @Override
-                    public StoryReporter createStoryReporter(FilePrintStreamFactory factory, StoryReporterBuilder storyReporterBuilder) {
-                        return new FitNesseStoryReporter();
-                    }
-                }));
+                .useStoryReporterBuilder(new StoryReporterBuilder()
+                        .withFormats(new Format("FITNESSE") {
+                            @Override
+                            public StoryReporter createStoryReporter(FilePrintStreamFactory factory, StoryReporterBuilder storyReporterBuilder) {
+                                return new FitNesseStoryReporter();
+                            }
+                        })
+                        .withCodeLocation(CodeLocations.codeLocationFromPath("."))
+                        .withRelativeDirectory(""));
 
         embedder.useEmbedderFailureStrategy(new FitNesseFailureStrategy());
 
