@@ -4,6 +4,8 @@
         Execute JBehave tests from FitNesse.
     </description>
 
+    <property file="${user.home}/.sonatype.properties"/>
+    <property file="version.info"/>
     <property environment="env"/>
     <property name="src.dir" location="src"/>
     <property name="test.src.dir" location="test"/>
@@ -150,31 +152,49 @@
     </target>
 
     <target name="pom" depends="resolve">
-        <ivy:deliver deliverpattern="${dist.dir}/ivy.xml" status="release" />
-        <ivy:makepom ivyfile="${dist.dir}/ivy.xml" templatefile="pom.xml.template" pomfile="${dist.dir}/fitnesse.pom" conf="standalone,default,test">
+        <ivy:deliver deliverpattern="${dist.dir}/ivy.xml" pubrevision="${version}" status="release" />
+        <ivy:makepom ivyfile="${dist.dir}/ivy.xml" templatefile="pom.xml.template" pomfile="${dist.dir}/fitnesse-jbehave.pom" conf="standalone,default,test">
                <mapping conf="standalone" scope="compile" />
                <mapping conf="test" scope="test" />
         </ivy:makepom>
     </target>
 
-    <target name="snapshot" depends="resolve,pom">
+    <target name="snapshot-pom" depends="resolve">
+        <ivy:deliver deliverpattern="${dist.dir}/ivy.xml" pubrevision="${version}-SNAPSHOT" status="release" />
+        <ivy:makepom ivyfile="${dist.dir}/ivy.xml" templatefile="pom.xml.template" pomfile="${dist.dir}/fitnesse-jbehave.pom" conf="standalone,default,test">
+            <mapping conf="standalone" scope="compile" />
+            <mapping conf="test" scope="test" />
+        </ivy:makepom>
+    </target>
+
+    <target name="snapshot" depends="snapshot-pom,jar,sources-jar,javadoc-jar" description="Publish a snapshot to oss.sonatype.org">
+        <fail unless="upload.user" message="supply upload.user on the command line"/>
+        <fail unless="upload.password" message="supply upload.password on the command line"/>
+        <fail unless="pgp.password" message="supply pgp.password on the command line"/>
+        <ivy:settings id="ivy.publish.instance"
+            file="ivysettings-sonatype.xml" />
         <ivy:publish resolver="sonatype-nexus-snapshots"
-            publishivy="false">
-            <artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]" />
+            settingsref="ivy.publish.instance"
+            pubrevision="${version}-SNAPSHOT"
+            publishivy="false"
+            overwrite="true" conf="default">
+            <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]" />
         </ivy:publish>
     </target>
 
-    <target name="publish" depends="jar,pom,standalone-jar,sources-jar,javadoc-jar">
+
+    <target name="publish" depends="pom,jar,standalone-jar,sources-jar,javadoc-jar" description="Publish a release to oss.sonatype.org">
         <fail unless="upload.user" message="supply upload.user on the command line"/>
         <fail unless="upload.password" message="supply upload.password on the command line"/>
         <fail unless="pgp.password" message="supply pgp.password on the command line"/>
         <ivy:settings id="ivy.publish.instance"
             file="ivysettings-sonatype.xml" />
         <ivy:publish resolver="sonatype-nexus-staging"
-            publishivy="false"
             settingsref="ivy.publish.instance"
-            overwrite="true">
-            <artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]" />
+            pubrevision="${version}"
+            publishivy="false"
+            overwrite="true" conf="default">
+            <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]" />
         </ivy:publish>
     </target>
 
