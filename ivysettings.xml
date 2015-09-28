@@ -5,6 +5,7 @@
     <chain name="default">
         <resolver ref="local"/>
         <ibiblio name="maven2" root="http://repo2.maven.org/maven2" m2compatible="true" />
+        <ibiblio name="maven2-snapshots" root="https://oss.sonatype.org/content/repositories/snapshots/" m2compatible="true"/>
     </chain>
     </resolvers>
 </ivysettings>
