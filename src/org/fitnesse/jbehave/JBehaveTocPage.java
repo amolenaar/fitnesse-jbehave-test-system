@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class JBehaveTocPage extends BaseWikiPage {
+public class JBehaveTocPage extends BaseWikitextPage {
     private static final String CONTENTS = "!contents";
 
     private final File path;
