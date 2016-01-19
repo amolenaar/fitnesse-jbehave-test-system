@@ -2,6 +2,8 @@ package org.fitnesse.jbehave;
 
 import fitnesse.components.TraversalListener;
 import fitnesse.testrunner.WikiTestPage;
+import fitnesse.testrunner.WikiTestPageUtil;
+import fitnesse.testsystems.TestPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikitextPage;
 import fitnesse.wikitext.parser.HtmlTranslator;
@@ -14,10 +16,10 @@ import java.util.List;
 
 public class StepsBuilder {
 
-    public List<String> getSteps(WikiTestPage page) {
+    public List<String> getSteps(TestPage page) {
         final List<String> items = new ArrayList<String>();
 
-        page.getSourcePage().getPageCrawler().traversePageAndAncestors(new TraversalListener<WikiPage>() {
+        WikiTestPageUtil.getSourcePage(page).getPageCrawler().traversePageAndAncestors(new TraversalListener<WikiPage>() {
             @Override
             public void process(WikiPage p) {
                 addItemsFromPage(p, items);

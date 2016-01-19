@@ -24,7 +24,7 @@
 	</publications>
  
 	<dependencies>
-		<dependency org="org.fitnesse" name="fitnesse" rev="20150927-SNAPSHOT" conf="*->default" />
+		<dependency org="org.fitnesse" name="fitnesse" rev="20151230" conf="*->default" />
 		<dependency org="org.jbehave" name="jbehave-core" rev="4.0.3" conf="standalone->default;default">
             <exclude org="org.hamcrest" />
             <exclude org="junit" />

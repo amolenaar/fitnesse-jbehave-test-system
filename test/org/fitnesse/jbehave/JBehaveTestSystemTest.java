@@ -29,7 +29,7 @@ public class JBehaveTestSystemTest {
         }
 
         @Override
-        protected void resolveCandidateSteps(WikiTestPage pageToTest, Embedder embedder) {
+        protected void resolveCandidateSteps(TestPage pageToTest, Embedder embedder) {
             embedder.candidateSteps().add(new ExampleSteps());
         }
     }
@@ -45,9 +45,7 @@ public class JBehaveTestSystemTest {
     public void canPerformAPassingTest() throws IOException, InterruptedException {
         JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
-        PageData pageData = mock(PageData.class);
-        when(pageToTest.getData()).thenReturn(pageData);
-        when(pageData.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/PassingJbehaveTest/content.txt")));
+        when(pageToTest.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/PassingJbehaveTest/content.txt")));
         TestSystemListener listener = mock(TestSystemListener.class);
         testSystem.addTestSystemListener(listener);
 
@@ -66,9 +64,7 @@ public class JBehaveTestSystemTest {
     public void canPerformAFailingTest() throws IOException, InterruptedException {
         JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
-        PageData pageData = mock(PageData.class);
-        when(pageToTest.getData()).thenReturn(pageData);
-        when(pageData.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/FailingJbehaveTest/content.txt")));
+        when(pageToTest.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/FailingJbehaveTest/content.txt")));
         TestSystemListener listener = mock(TestSystemListener.class);
         testSystem.addTestSystemListener(listener);
 
@@ -87,9 +83,7 @@ public class JBehaveTestSystemTest {
     public void canHandlePendingSteps() throws IOException, InterruptedException {
         JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
         WikiTestPage pageToTest = mock(WikiTestPage.class);
-        PageData pageData = mock(PageData.class);
-        when(pageToTest.getData()).thenReturn(pageData);
-        when(pageData.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/FailingJbehaveTest/content.txt")));
+        when(pageToTest.getContent()).thenReturn(FileUtil.getFileContent(new File("FitNesseRoot/JbehaveTestSystem/FailingJbehaveTest/content.txt")));
         TestSystemListener listener = mock(TestSystemListener.class);
         testSystem.addTestSystemListener(listener);
 

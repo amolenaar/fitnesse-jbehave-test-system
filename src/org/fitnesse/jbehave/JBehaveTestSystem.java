@@ -1,8 +1,9 @@
 package org.fitnesse.jbehave;
 
-import fitnesse.html.HtmlUtil;
-import fitnesse.testrunner.WikiTestPage;
-import fitnesse.testsystems.*;
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.*;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.io.CodeLocations;
@@ -12,20 +13,13 @@ import org.jbehave.core.reporters.*;
 import org.jbehave.core.steps.CandidateSteps;
 import org.jbehave.core.steps.InstanceStepsFactory;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
+import fitnesse.testsystems.*;
 
 import static fitnesse.html.HtmlUtil.escapeHTML;
 import static java.lang.String.format;
 
 /**
  * <p>JBehave test system.</p>
- *
- * <p>NB. It requires TestPage's of the type WikiTestPage.</p>
  */
 public class JBehaveTestSystem implements TestSystem {
 
@@ -82,9 +76,9 @@ public class JBehaveTestSystem implements TestSystem {
 
             Embedder embedder = newEmbedder();
 
-            resolveCandidateSteps((WikiTestPage) pageToTest, embedder);
+            resolveCandidateSteps(pageToTest, embedder);
 
-            embedder.runStoriesAsPaths(Arrays.asList(((WikiTestPage) pageToTest).getData().getContent()));
+            embedder.runStoriesAsPaths(Collections.singletonList(pageToTest.getContent()));
         } finally {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
             testSystemListener.testComplete(pageToTest, testSummary);
@@ -133,7 +127,7 @@ public class JBehaveTestSystem implements TestSystem {
         return embedder;
     }
 
-    protected void resolveCandidateSteps(WikiTestPage pageToTest, Embedder embedder) {
+    protected void resolveCandidateSteps(TestPage pageToTest, Embedder embedder) {
         Collection<String> stepNames = new StepsBuilder().getSteps(pageToTest);
 
         for (Object step : resolveClassInstances(stepNames)) {
@@ -146,7 +140,7 @@ public class JBehaveTestSystem implements TestSystem {
     }
 
     private Collection<Object> resolveClassInstances(Collection<String> stepNames) {
-        List<Object> steps = new LinkedList();
+        List<Object> steps = new LinkedList<>();
         for (String stepName : stepNames) {
             try {
                 steps.add(classLoader.loadClass(stepName).newInstance());
@@ -296,6 +290,11 @@ public class JBehaveTestSystem implements TestSystem {
         @Override
         public void restarted(String step, Throwable cause) {
             println("restarted " + step + " " + cause);
+        }
+
+        @Override
+        public void restartedStory(Story story, Throwable cause) {
+            println("restarted story " + story.getName() + " " + cause);
         }
 
         @Override

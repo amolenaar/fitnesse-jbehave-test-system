@@ -1,9 +1,9 @@
 package org.fitnesse.jbehave;
 
-import fitnesse.wikitext.parser.*;
-
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+
+import fitnesse.wikitext.parser.*;
 
 public class StepsSymbolType extends SymbolType implements Rule, StepsProvider {
 
@@ -15,12 +15,12 @@ public class StepsSymbolType extends SymbolType implements Rule, StepsProvider {
     }
 
     public Collection<String> provideSteps(Translator translator, Symbol symbol) {
-        return Arrays.asList(translator.translate(symbol.childAt(0)));
+        return Collections.singletonList(translator.translate(symbol.childAt(0)));
     }
 
     public Maybe<Symbol> parse(Symbol current, Parser parser) {
         if (!parser.isMoveNext(SymbolType.Whitespace)) return Symbol.nothing;
 
-        return new Maybe(current.add(parser.parseToEnds(0, SymbolProvider.pathRuleProvider, new SymbolType[] {SymbolType.Newline})));
+        return new Maybe<>(current.add(parser.parseToEnds(0, SymbolProvider.pathRuleProvider, new SymbolType[] {SymbolType.Newline})));
     }
 }
