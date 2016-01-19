@@ -9,13 +9,13 @@
 		</description>
 	</info>
 
-    <configurations>
+	<configurations>
 		<conf name="default" visibility="public" />
 		<conf name="standalone" visibility="public" description="include in fitnesse-jbehave-standalone build" />
 		<conf name="test" visibility="public" extends="default" />
 	</configurations>
 
-    <publications xmlns:e="urn:ant.apache.org:ivy-extras">
+	<publications xmlns:e="urn:ant.apache.org:ivy-extras">
 		<artifact name="fitnesse-jbehave" type="jar" ext="jar" />
 		<artifact name="fitnesse-jbehave" type="pom" ext="pom" />
 		<artifact name="fitnesse-jbehave" type="source" ext="jar" e:classifier="sources" />
@@ -25,12 +25,12 @@
  
 	<dependencies>
 		<dependency org="org.fitnesse" name="fitnesse" rev="20151230" conf="*->default" />
-		<dependency org="org.jbehave" name="jbehave-core" rev="4.0.3" conf="standalone->default;default">
-            <exclude org="org.hamcrest" />
-            <exclude org="junit" />
-            <exclude org="com.thoughtworks.xstream" />
-            <exclude org="org.freemarker" />
-        </dependency>
+		<dependency org="org.jbehave" name="jbehave-core" rev="4.0.4" conf="standalone->default;default">
+			<exclude org="org.hamcrest" />
+			<exclude org="junit" />
+			<exclude org="com.thoughtworks.xstream" />
+			<exclude org="org.freemarker" />
+		</dependency>
 
 		<!-- scope: test -->
 		<dependency org="org.mockito" name="mockito-core" rev="1.9.5" conf="test->default" />
