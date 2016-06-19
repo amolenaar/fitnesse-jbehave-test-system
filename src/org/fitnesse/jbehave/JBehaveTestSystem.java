@@ -14,6 +14,7 @@ import org.jbehave.core.steps.CandidateSteps;
 import org.jbehave.core.steps.InstanceStepsFactory;
 
 import fitnesse.testsystems.*;
+import util.FileUtil;
 
 import static fitnesse.html.HtmlUtil.escapeHTML;
 import static java.lang.String.format;
@@ -43,7 +44,7 @@ public class JBehaveTestSystem implements TestSystem {
     }
 
     @Override
-    public void start() throws IOException {
+    public void start() {
 
         started = true;
 
@@ -51,21 +52,21 @@ public class JBehaveTestSystem implements TestSystem {
     }
 
     @Override
-    public void bye() throws IOException, InterruptedException {
+    public void bye() {
         kill();
     }
 
     @Override
-    public void kill() throws IOException {
+    public void kill() {
         testSystemListener.testSystemStopped(this, null);
 
         if (classLoader instanceof Closeable) {
-            ((Closeable) classLoader).close();
+            FileUtil.close((Closeable) classLoader);
         }
     }
 
     @Override
-    public void runTests(TestPage pageToTest) throws IOException, InterruptedException {
+    public void runTests(TestPage pageToTest) {
         final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         testSummary = new TestSummary();
 
@@ -95,7 +96,7 @@ public class JBehaveTestSystem implements TestSystem {
         testSystemListener.addTestSystemListener(listener);
     }
 
-    private Embedder newEmbedder() throws MalformedURLException {
+    private Embedder newEmbedder() {
         Embedder embedder = new Embedder();
         embedder.configuration()
                 .useStoryLoader(new StoryLoader() {
@@ -157,11 +158,7 @@ public class JBehaveTestSystem implements TestSystem {
     }
 
     private void output(String message) {
-        try {
-            testSystemListener.testOutputChunk(message);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to send ", e);
-        }
+        testSystemListener.testOutputChunk(message);
     }
 
     private void processStep(String message, ExecutionResult result) {
