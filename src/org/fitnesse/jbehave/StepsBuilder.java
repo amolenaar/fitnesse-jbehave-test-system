@@ -3,6 +3,7 @@ package org.fitnesse.jbehave;
 import fitnesse.components.TraversalListener;
 import fitnesse.testrunner.WikiTestPageUtil;
 import fitnesse.testsystems.TestPage;
+import fitnesse.wiki.BaseWikitextPage;
 import fitnesse.wiki.SymbolicPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikitextPage;
@@ -37,7 +38,7 @@ public class StepsBuilder {
         if (wikitext instanceof SymbolicPage) {
             WikiPage wikiPage = ((SymbolicPage) wikitext).getRealPage();
             if (wikiPage instanceof JBehaveStoryPage) {
-                page = ((JBehaveStoryPage) wikiPage).makeParsingPage();
+                page = BaseWikitextPage.makeParsingPage((JBehaveStoryPage) wikiPage);
             } else
                 return new ArrayList<>();
         } else

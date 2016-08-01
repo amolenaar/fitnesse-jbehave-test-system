@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyList;
 
-public class JBehaveStoryPage extends BaseWikiPage {
+public class JBehaveStoryPage extends BaseWikitextPage {
     private final File path;
     private final VariableSource variableSource;
     private String content;
@@ -60,16 +60,6 @@ public class JBehaveStoryPage extends BaseWikiPage {
         WikiPageProperties properties = new WikiPageProperties();
         properties.set(PageType.TEST.toString());
         return properties;
-    }
-
-    private ParsingPage getParsingPage() {
-        parse();
-        return parsingPage;
-    }
-
-    private Symbol getSyntaxTree() {
-        parse();
-        return syntaxTree;
     }
 
     private void parse() {
