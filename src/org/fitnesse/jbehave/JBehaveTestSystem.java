@@ -126,12 +126,12 @@ public class JBehaveTestSystem implements TestSystem {
                 .useStoryReporterBuilder(getStoryReporterBuilder(keywords));
     }
 
-    private StoryReporterBuilder getStoryReporterBuilder(LocalizedKeywords keywords) {
+    private StoryReporterBuilder getStoryReporterBuilder(final LocalizedKeywords keywords) {
         return new StoryReporterBuilder()
                 .withFormats(new Format("FITNESSE") {
                     @Override
                     public StoryReporter createStoryReporter(FilePrintStreamFactory factory, StoryReporterBuilder storyReporterBuilder) {
-                        return new FitNesseStoryReporter();
+                        return new FitNesseStoryReporter(keywords);
                     }
                 })
                 .withCodeLocation(CodeLocations.codeLocationFromPath("."))
@@ -209,6 +209,12 @@ public class JBehaveTestSystem implements TestSystem {
 
     public class FitNesseStoryReporter implements StoryReporter {
 
+        private final LocalizedKeywords keywords;
+
+        public FitNesseStoryReporter(LocalizedKeywords keywords) {
+            this.keywords = keywords;
+        }
+
         @Override
         public void storyNotAllowed(Story story, String filter) {
             println("storyNotAllowed");
@@ -232,13 +238,13 @@ public class JBehaveTestSystem implements TestSystem {
         @Override
         public void narrative(Narrative narrative) {
             if (!"".equals(narrative.inOrderTo()))
-                println("<em>In order to</em> " + escapeHTML(narrative.inOrderTo()));
+                println("<em>" + keywords.inOrderTo() + "</em> " + escapeHTML(narrative.inOrderTo()));
             if (!"".equals(narrative.asA()))
-                println("<em>As a</em> " + escapeHTML(narrative.asA()));
+                println("<em>" + keywords.asA() + "</em> " + escapeHTML(narrative.asA()));
             if (!"".equals(narrative.iWantTo()))
-                println("<em>I want to</em> " + escapeHTML(narrative.iWantTo()));
+                println("<em>" + keywords.iWantTo() + "</em> " + escapeHTML(narrative.iWantTo()));
             if (!"".equals(narrative.soThat()))
-                println("<em>So that</em> " + escapeHTML(narrative.soThat()));
+                println("<em>" + keywords.soThat() + "</em> " + escapeHTML(narrative.soThat()));
         }
 
         @Override
