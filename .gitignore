@@ -24,3 +24,6 @@ fitnesse-jbehave-test-system.iws
 FitNesseRoot/JbehaveClassPath
 dependencies
 storyDurations.props
+/.idea/
+.idea/
+FitNesseRoot/files/

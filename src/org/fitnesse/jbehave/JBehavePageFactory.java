@@ -8,6 +8,7 @@ import java.io.File;
 
 public class JBehavePageFactory implements WikiPageFactory {
     private static final String STORY_EXTENSION = ".story";
+    private static final String FEATURE_EXTENSION = ".feature";
 
     @Override
     public WikiPage makePage(File path, String pageName, WikiPage parent, VariableSource variableSource) {
@@ -25,6 +26,6 @@ public class JBehavePageFactory implements WikiPageFactory {
     }
 
     static boolean isStoryFile(File path) {
-        return (path.getName().endsWith(STORY_EXTENSION));
+        return (path.getName().endsWith(STORY_EXTENSION)) || (path.getName().endsWith(FEATURE_EXTENSION));
     }
 }

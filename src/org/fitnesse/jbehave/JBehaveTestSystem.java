@@ -1,20 +1,27 @@
 package org.fitnesse.jbehave;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.*;
+import fitnesse.testsystems.*;
+import org.apache.commons.lang.StringUtils;
+import org.jbehave.core.configuration.Configuration;
+import org.jbehave.core.configuration.MostUsefulConfiguration;
 import org.jbehave.core.embedder.Embedder;
 import org.jbehave.core.failures.BatchFailures;
+import org.jbehave.core.i18n.LocalizedKeywords;
 import org.jbehave.core.io.CodeLocations;
 import org.jbehave.core.io.StoryLoader;
 import org.jbehave.core.model.*;
+import org.jbehave.core.parsers.RegexStoryParser;
+import org.jbehave.core.parsers.StoryParser;
+import org.jbehave.core.parsers.TransformingStoryParser;
+import org.jbehave.core.parsers.gherkin.GherkinStoryParser;
 import org.jbehave.core.reporters.*;
 import org.jbehave.core.steps.CandidateSteps;
 import org.jbehave.core.steps.InstanceStepsFactory;
-
-import fitnesse.testsystems.*;
+import org.jbehave.core.steps.MarkUnmatchedStepsAsPending;
 import util.FileUtil;
+
+import java.io.Closeable;
+import java.util.*;
 
 import static fitnesse.html.HtmlUtil.escapeHTML;
 import static java.lang.String.format;
@@ -30,6 +37,7 @@ public class JBehaveTestSystem implements TestSystem {
 
     private boolean started = false;
     private TestSummary testSummary;
+    private int scenarioCnt;
 
     public JBehaveTestSystem(String name, ClassLoader classLoader) {
         super();
@@ -75,7 +83,7 @@ public class JBehaveTestSystem implements TestSystem {
         try {
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            Embedder embedder = newEmbedder();
+            Embedder embedder = newEmbedder(getLocale(pageToTest), pageToTest);
 
             resolveCandidateSteps(pageToTest, embedder);
 
@@ -84,6 +92,14 @@ public class JBehaveTestSystem implements TestSystem {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
             testSystemListener.testComplete(pageToTest, testSummary);
         }
+    }
+
+    private Locale getLocale(TestPage pageToTest) {
+        String language = pageToTest.getVariable("language");
+        Locale locale = Locale.ENGLISH;
+        if (StringUtils.isNotEmpty(language))
+            locale = Locale.forLanguageTag(language);
+        return locale;
     }
 
     @Override
@@ -96,36 +112,54 @@ public class JBehaveTestSystem implements TestSystem {
         testSystemListener.addTestSystemListener(listener);
     }
 
-    private Embedder newEmbedder() {
+    private Embedder newEmbedder(Locale locale, TestPage pageToTest) {
         Embedder embedder = new Embedder();
-        embedder.configuration()
-                .useStoryLoader(new StoryLoader() {
-                    @Override
-                    public String loadStoryAsText(String storyPath) {
-                        // We pass in the story text, so just pass it through
-                        return storyPath;
-                    }
+        embedder.useConfiguration(getConfig(new LocalizedKeywords(locale), pageToTest));
+        embedder.useEmbedderFailureStrategy(new FitNesseFailureStrategy());
+        embedder.embedderControls().doGenerateViewAfterStories(false);
+        return embedder;
+    }
 
+    private Configuration getConfig(LocalizedKeywords keywords, TestPage pageToTest) {
+        StoryParser parser = new RegexStoryParser(keywords);
+        String parserType = pageToTest.getVariable("parser");
+        if (parserType != null && "gherkin".equals(parserType.trim().toLowerCase())){
+            parser = new TransformingStoryParser(parser,new GherkinStoryParser.GherkinTransformer(keywords));
+        }
+        return new MostUsefulConfiguration().useKeywords(keywords)
+                .useStepCollector(new MarkUnmatchedStepsAsPending(keywords))
+                .useStoryParser(parser)
+                .useDefaultStoryReporter(new ConsoleOutput(keywords))
+                .useStoryLoader(getStoryLoader())
+                .useStoryReporterBuilder(getStoryReporterBuilder(keywords));
+    }
+
+    private StoryReporterBuilder getStoryReporterBuilder(final LocalizedKeywords keywords) {
+        return new StoryReporterBuilder()
+                .withFormats(new Format("FITNESSE") {
                     @Override
-                    public String loadResourceAsText(String resourcePath) {
-                        throw new IllegalStateException("Should not load resources as text.");
+                    public StoryReporter createStoryReporter(FilePrintStreamFactory factory, StoryReporterBuilder storyReporterBuilder) {
+                        return new FitNesseStoryReporter(keywords);
                     }
                 })
-                .useStoryReporterBuilder(new StoryReporterBuilder()
-                        .withFormats(new Format("FITNESSE") {
-                            @Override
-                            public StoryReporter createStoryReporter(FilePrintStreamFactory factory, StoryReporterBuilder storyReporterBuilder) {
-                                return new FitNesseStoryReporter();
-                            }
-                        })
-                        .withCodeLocation(CodeLocations.codeLocationFromPath("."))
-                        .withRelativeDirectory(""));
+                .withCodeLocation(CodeLocations.codeLocationFromPath("."))
+                .withRelativeDirectory("")
+                .withKeywords(keywords);
+    }
 
-        embedder.useEmbedderFailureStrategy(new FitNesseFailureStrategy());
+    private StoryLoader getStoryLoader() {
+        return new StoryLoader() {
+            @Override
+            public String loadStoryAsText(String storyPath) {
+                // We pass in the story text, so just pass it through
+                return storyPath;
+            }
 
-        embedder.embedderControls().doGenerateViewAfterStories(false);
-
-        return embedder;
+            @Override
+            public String loadResourceAsText(String resourcePath) {
+                throw new IllegalStateException("Should not load resources as text.");
+            }
+        };
     }
 
     protected void resolveCandidateSteps(TestPage pageToTest, Embedder embedder) {
@@ -146,7 +180,7 @@ public class JBehaveTestSystem implements TestSystem {
             try {
                 steps.add(classLoader.loadClass(stepName).newInstance());
             } catch (Exception e) {
-                processStep(format("Unable to load steps from %s: %s", stepName, e.toString()), ExecutionResult.ERROR);
+                processStep(ExecutionResult.ERROR, format("Unable to load steps from %s: %s", stepName, e.toString()));
             }
         }
         return steps;
@@ -161,12 +195,33 @@ public class JBehaveTestSystem implements TestSystem {
         testSystemListener.testOutputChunk(message);
     }
 
-    private void processStep(String message, ExecutionResult result) {
+    private void processStep(ExecutionResult result, String... message) {
         testSummary.add(result);
-        output(format("<span class='%s'>%s</span><br/>", result.name().toLowerCase(), escapeHTML(message)));
+        StringBuilder sb = new StringBuilder();
+        sb.append("<span class='").append(result.name().toLowerCase()).append("'>");
+        if (message != null && message.length > 0) {
+            sb.append(escapeHTML(message[0]));
+            if (message.length > 1) {
+                for (int i = 1; i < message.length; i++) {
+                    sb.append("<br>").append(escapeHTML(message[i]));
+                }
+            }
+        }
+        sb.append("</span><br/>");
+        output(sb.toString());
+    }
+
+    public int getScenarioCnt() {
+        return scenarioCnt;
     }
 
     public class FitNesseStoryReporter implements StoryReporter {
+
+        private final LocalizedKeywords keywords;
+
+        public FitNesseStoryReporter(LocalizedKeywords keywords) {
+            this.keywords = keywords;
+        }
 
         @Override
         public void storyNotAllowed(Story story, String filter) {
@@ -191,13 +246,13 @@ public class JBehaveTestSystem implements TestSystem {
         @Override
         public void narrative(Narrative narrative) {
             if (!"".equals(narrative.inOrderTo()))
-                println("<em>In order to</em> " + escapeHTML(narrative.inOrderTo()));
+                println("<em>" + keywords.inOrderTo() + "</em> " + escapeHTML(narrative.inOrderTo()));
             if (!"".equals(narrative.asA()))
-                println("<em>As a</em> " + escapeHTML(narrative.asA()));
+                println("<em>" + keywords.asA() + "</em> " + escapeHTML(narrative.asA()));
             if (!"".equals(narrative.iWantTo()))
-                println("<em>I want to</em> " + escapeHTML(narrative.iWantTo()));
+                println("<em>" + keywords.iWantTo() + "</em> " + escapeHTML(narrative.iWantTo()));
             if (!"".equals(narrative.soThat()))
-                println("<em>So that</em> " + escapeHTML(narrative.soThat()));
+                println("<em>" + keywords.soThat() + "</em> " + escapeHTML(narrative.soThat()));
         }
 
         @Override
@@ -212,6 +267,7 @@ public class JBehaveTestSystem implements TestSystem {
 
         @Override
         public void beforeScenario(String scenarioTitle) {
+            scenarioCnt++;
             println(format("<h3>Scenario: %s</h3><div class='jbehave-scenario'>", escapeHTML(scenarioTitle)));
         }
 
@@ -256,22 +312,23 @@ public class JBehaveTestSystem implements TestSystem {
 
         @Override
         public void successful(String step) {
-            processStep(step, ExecutionResult.PASS);
+            processStep(ExecutionResult.PASS, step);
         }
 
         @Override
         public void failed(String step, Throwable cause) {
-            processStep(step, ExecutionResult.FAIL);
+            String[] messages = cause.getCause() == null ? new String[]{step} : new String[]{step, "  " + cause.getCause().getMessage()};
+            processStep(ExecutionResult.FAIL, messages);
         }
 
         @Override
         public void ignorable(String step) {
-            processStep(step, ExecutionResult.IGNORE);
+            processStep(ExecutionResult.IGNORE, step);
         }
 
         @Override
         public void pending(String step) {
-            processStep(format("Missing step: '%s'", step), ExecutionResult.ERROR);
+            processStep(ExecutionResult.ERROR, format("Missing step: '%s'", step));
         }
 
         @Override
@@ -312,7 +369,7 @@ public class JBehaveTestSystem implements TestSystem {
         @Override
         public void handleFailures(BatchFailures failures) {
             for (Map.Entry<String, Throwable> failure : failures.entrySet()) {
-                processStep(failure.getValue().getMessage(), ExecutionResult.ERROR);
+                processStep(ExecutionResult.ERROR, failure.getValue().getMessage());
             }
 
         }

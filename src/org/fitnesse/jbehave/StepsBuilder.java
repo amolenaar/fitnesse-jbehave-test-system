@@ -1,15 +1,13 @@
 package org.fitnesse.jbehave;
 
 import fitnesse.components.TraversalListener;
-import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testrunner.WikiTestPageUtil;
 import fitnesse.testsystems.TestPage;
+import fitnesse.wiki.BaseWikitextPage;
+import fitnesse.wiki.SymbolicPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikitextPage;
-import fitnesse.wikitext.parser.HtmlTranslator;
-import fitnesse.wikitext.parser.Symbol;
-import fitnesse.wikitext.parser.SymbolTreeWalker;
-import fitnesse.wikitext.parser.Translator;
+import fitnesse.wikitext.parser.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +34,16 @@ public class StepsBuilder {
     }
 
     protected List<String> getItemsFromPage(WikitextPage wikitext) {
-        return new Steps(new HtmlTranslator(wikitext.getParsingPage().getPage(), wikitext.getParsingPage())).getSteps(wikitext.getSyntaxTree());
+        ParsingPage page = null;
+        if (wikitext instanceof SymbolicPage) {
+            WikiPage wikiPage = ((SymbolicPage) wikitext).getRealPage();
+            if (wikiPage instanceof JBehaveStoryPage) {
+                page = BaseWikitextPage.makeParsingPage((JBehaveStoryPage) wikiPage);
+            } else
+                return new ArrayList<>();
+        } else
+            page = wikitext.getParsingPage();
+        return new Steps(new HtmlTranslator(page.getPage(), page)).getSteps(wikitext.getSyntaxTree());
     }
 
     private static class Steps {

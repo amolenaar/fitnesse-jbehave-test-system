@@ -53,11 +53,74 @@ public class JBehaveTestSystemTest {
         testSystem.runTests(pageToTest);
         testSystem.bye();
 
+        assertThat(testSystem.getScenarioCnt(), is(2));
+
         verify(listener).testSystemStarted(testSystem);
         verify(listener).testSystemStopped(eq(testSystem), eq((Throwable) null));
         verify(listener).testStarted(pageToTest);
         verify(listener).testComplete(eq(pageToTest), any(TestSummary.class));
+    }
 
+    @Test
+    public void canPerformAPassingTestDE() throws IOException, InterruptedException {
+        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
+        WikiTestPage pageToTest = mock(WikiTestPage.class);
+        when(pageToTest.getVariable("language")).thenReturn("de");
+        when(pageToTest.getContent()).thenReturn("Szenario: 2 squared\n" +
+                "\n" +
+                "Gegeben a variable x with value 2\n" +
+                "Wenn I multiply x by 2 \n" +
+                "Dann x should equal 4\n" +
+                "\n" +
+                "Szenario: 3 squared\n" +
+                "\n" +
+                "Gegeben a variable x with value 3\n" +
+                "Wenn I multiply x by 3 \n" +
+                "Dann x should equal 9");
+        TestSystemListener listener = mock(TestSystemListener.class);
+        testSystem.addTestSystemListener(listener);
+
+        testSystem.start();
+        testSystem.runTests(pageToTest);
+        testSystem.bye();
+
+        assertThat(testSystem.getScenarioCnt(), is(2));
+
+        verify(listener).testSystemStarted(testSystem);
+        verify(listener).testSystemStopped(eq(testSystem), eq((Throwable) null));
+        verify(listener).testStarted(pageToTest);
+        verify(listener).testComplete(eq(pageToTest), any(TestSummary.class));
+    }
+
+    @Test
+    public void canPerformAPassingTestInvalidLanguageGiven() throws IOException, InterruptedException {
+        JBehaveTestSystem testSystem = new TestJBehaveTestSystem("", getClassLoader());
+        WikiTestPage pageToTest = mock(WikiTestPage.class);
+        when(pageToTest.getContent()).thenReturn("#language: invlid_should_default_to_english \r\n"+
+                "Scenario: 2 squared\n" +
+                "\n" +
+                "Given a variable x with value 2\n" +
+                "When I multiply x by 2 \n" +
+                "Then x should equal 4\n" +
+                "\n" +
+                "Scenario: 3 squared\n" +
+                "\n" +
+                "Given a variable x with value 3\n" +
+                "When I multiply x by 3 \n" +
+                "Then x should equal 9");
+        TestSystemListener listener = mock(TestSystemListener.class);
+        testSystem.addTestSystemListener(listener);
+
+        testSystem.start();
+        testSystem.runTests(pageToTest);
+        testSystem.bye();
+
+        assertThat(testSystem.getScenarioCnt(), is(2));
+
+        verify(listener).testSystemStarted(testSystem);
+        verify(listener).testSystemStopped(eq(testSystem), eq((Throwable) null));
+        verify(listener).testStarted(pageToTest);
+        verify(listener).testComplete(eq(pageToTest), any(TestSummary.class));
     }
 
     @Test
