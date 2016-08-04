@@ -11,6 +11,9 @@ import org.jbehave.core.io.CodeLocations;
 import org.jbehave.core.io.StoryLoader;
 import org.jbehave.core.model.*;
 import org.jbehave.core.parsers.RegexStoryParser;
+import org.jbehave.core.parsers.StoryParser;
+import org.jbehave.core.parsers.TransformingStoryParser;
+import org.jbehave.core.parsers.gherkin.GherkinStoryParser;
 import org.jbehave.core.reporters.*;
 import org.jbehave.core.steps.CandidateSteps;
 import org.jbehave.core.steps.InstanceStepsFactory;
@@ -80,7 +83,7 @@ public class JBehaveTestSystem implements TestSystem {
         try {
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            Embedder embedder = newEmbedder(getLocale(pageToTest));
+            Embedder embedder = newEmbedder(getLocale(pageToTest), pageToTest);
 
             resolveCandidateSteps(pageToTest, embedder);
 
@@ -109,18 +112,23 @@ public class JBehaveTestSystem implements TestSystem {
         testSystemListener.addTestSystemListener(listener);
     }
 
-    private Embedder newEmbedder(Locale locale) {
+    private Embedder newEmbedder(Locale locale, TestPage pageToTest) {
         Embedder embedder = new Embedder();
-        embedder.useConfiguration(getConfig(new LocalizedKeywords(locale)));
+        embedder.useConfiguration(getConfig(new LocalizedKeywords(locale), pageToTest));
         embedder.useEmbedderFailureStrategy(new FitNesseFailureStrategy());
         embedder.embedderControls().doGenerateViewAfterStories(false);
         return embedder;
     }
 
-    private Configuration getConfig(LocalizedKeywords keywords) {
+    private Configuration getConfig(LocalizedKeywords keywords, TestPage pageToTest) {
+        StoryParser parser = new RegexStoryParser(keywords);
+        String parserType = pageToTest.getVariable("parser");
+        if (parserType != null && "gherkin".equals(parserType.trim().toLowerCase())){
+            parser = new TransformingStoryParser(parser,new GherkinStoryParser.GherkinTransformer(keywords));
+        }
         return new MostUsefulConfiguration().useKeywords(keywords)
                 .useStepCollector(new MarkUnmatchedStepsAsPending(keywords))
-                .useStoryParser(new RegexStoryParser(keywords))
+                .useStoryParser(parser)
                 .useDefaultStoryReporter(new ConsoleOutput(keywords))
                 .useStoryLoader(getStoryLoader())
                 .useStoryReporterBuilder(getStoryReporterBuilder(keywords));
